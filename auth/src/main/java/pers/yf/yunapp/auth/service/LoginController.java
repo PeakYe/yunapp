@@ -1,17 +1,22 @@
 package pers.yf.yunapp.auth.service;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import pers.yf.yunapp.auth.service.model.CacheServiceTest;
 import pers.yf.yunapp.auth.service.model.UserDetail;
 
 @Controller
 @RequestMapping("auth")
 public class LoginController {
+
+    @Autowired
+    CacheServiceTest serviceTest;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String loginGet() {
@@ -28,8 +33,8 @@ public class LoginController {
     @ResponseBody
     public String loginX() {
         String demo = "hello";
-        setCache(demo);
-        return readCache(demo);
+//        setCache(demo);
+        return serviceTest.readCache(demo);
     }
 
     @CachePut(key = "#demo")
@@ -37,8 +42,5 @@ public class LoginController {
         return "123456";
     }
 
-    @Cacheable( key = "#demo")
-    public String readCache(String demo) {
-        return null;
-    }
+
 }

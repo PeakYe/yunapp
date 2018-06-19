@@ -1,9 +1,10 @@
 spring:
   application:
     name: oauth2
-#  cache:
-#    ehcache:
-#      config: classpath:/ehcache.xml
+  cache:
+    type: ehcache
+    ehcache:
+      config: classpath:/ehcache.xml
 #    cache-names: simple
 eureka:
   client:
