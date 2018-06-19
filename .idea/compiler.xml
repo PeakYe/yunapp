@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="auth" />
+        <module name="eureka" />
+        <module name="gateway" />
+        <module name="user-service" />
+        <module name="yunservice" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="auth" target="1.8" />
+      <module name="eureka" target="1.6" />
+      <module name="gateway" target="1.6" />
+      <module name="user-service" target="1.6" />
+      <module name="yunapp" target="1.6" />
+      <module name="yunservice" target="1.6" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
