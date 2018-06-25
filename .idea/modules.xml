@@ -3,8 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/auth/auth.iml" filepath="$PROJECT_DIR$/auth/auth.iml" />
+      <module fileurl="file://$PROJECT_DIR$/auth/auth-core/auth-core.iml" filepath="$PROJECT_DIR$/auth/auth-core/auth-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/auth/auth-token/auth-token.iml" filepath="$PROJECT_DIR$/auth/auth-token/auth-token.iml" />
       <module fileurl="file://$PROJECT_DIR$/eureka/eureka.iml" filepath="$PROJECT_DIR$/eureka/eureka.iml" />
       <module fileurl="file://$PROJECT_DIR$/gateway/gateway.iml" filepath="$PROJECT_DIR$/gateway/gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-cloud-starter-auth/spring-cloud-starter-auth.iml" filepath="$PROJECT_DIR$/spring-cloud-starter-auth/spring-cloud-starter-auth.iml" />
       <module fileurl="file://$PROJECT_DIR$/user-service/user-service.iml" filepath="$PROJECT_DIR$/user-service/user-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/yunapp.iml" filepath="$PROJECT_DIR$/yunapp.iml" />
       <module fileurl="file://$PROJECT_DIR$/yunservice/yunservice.iml" filepath="$PROJECT_DIR$/yunservice/yunservice.iml" />

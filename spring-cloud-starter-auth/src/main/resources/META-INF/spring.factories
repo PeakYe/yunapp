@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+pers.yf.spring.cloud.ext.auth.config.AuthCientWebMvcConfigurer,\
+pers.yf.spring.cloud.ext.auth.config.AuthGatewayConfigurer,\
+pers.yf.spring.cloud.ext.auth.config.AuthServerWebMvcConfigurer

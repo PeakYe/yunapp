@@ -1,6 +1,8 @@
 spring:
   application:
     name: gateway
+  cache:
+    type: simple
 eureka:
   client:
     serviceUrl:
@@ -11,8 +13,14 @@ eureka:
 server:
   port: 8000
 
+auth:
+  route:
+    enable: true
+  client:
+    enable: false
+
 
 zuul:
   routes:
    user: user-service
-   oauth: oauth2
+   auth: auth-service

@@ -13,7 +13,6 @@
         <module>gateway</module>
         <module>yunservice</module>
         <module>user-service</module>
-        <module>auth</module>
     </modules>
 
 
