@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import pers.yf.spring.cloud.ext.auth.AuthProperties;
 import pers.yf.spring.cloud.ext.auth.route.AutherFilter;
+import pers.yf.spring.cloud.ext.auth.route.IUserCacheService;
 import pers.yf.spring.cloud.ext.auth.route.UserCacheService;
 
 @Configuration
@@ -27,7 +28,8 @@ public class AuthGatewayConfigurer {
     }
 
     @Bean
-    public UserCacheService userCacheService() {
+    @ConditionalOnMissingClass()
+    public IUserCacheService userCacheService() {
         return new UserCacheService();
     }
 

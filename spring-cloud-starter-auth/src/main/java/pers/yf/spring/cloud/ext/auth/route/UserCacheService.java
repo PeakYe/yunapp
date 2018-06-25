@@ -8,18 +8,20 @@ import pers.yf.spring.cloud.ext.auth.AuthProperties;
 import pers.yf.spring.cloud.ext.auth.UserDetail;
 
 
-public class UserCacheService {
+public class UserCacheService implements IUserCacheService {
     @Autowired
     private RestTemplate restTemplate;
 
     @Autowired
     private AuthProperties authConfiguration;
 
+    @Override
     @Cacheable(cacheNames = "user")
     public UserDetail getUserDetial(String token) {
         return restTemplate.getForObject("http://" + authConfiguration.getAuthService() + "/token", UserDetail.class);
     }
 
+    @Override
     @Cacheable(cacheNames = "user")
     public String getUserDetialJson(String token) {
         UserDetail detail = restTemplate.getForObject("http://" + authConfiguration.getAuthService() + "/token", UserDetail.class);
