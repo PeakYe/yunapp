@@ -8,6 +8,8 @@
         <option value="$PROJECT_DIR$/auth/pom.xml" />
         <option value="$PROJECT_DIR$/auth/api/pom.xml" />
         <option value="$PROJECT_DIR$/auth/auth-core/pom.xml" />
+        <option value="$PROJECT_DIR$/spring-cloud-starter-auth/pom.xml" />
+        <option value="$PROJECT_DIR$/gateway/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

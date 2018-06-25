@@ -10,6 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>eureka</module>
+        <module>auth</module>
         <module>gateway</module>
         <module>yunservice</module>
         <module>user-service</module>

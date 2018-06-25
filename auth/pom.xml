@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>pers.yf.yunapp.auth</artifactId>
+    <artifactId>auth</artifactId>
     <packaging>pom</packaging>
     <build>
         <plugins>
@@ -25,9 +25,7 @@
     </build>
     <modules>
         <module>auth-token</module>
-        <module>auth-api</module>
         <module>auth-core</module>
-        <module>../spring-cloud-starter-auth</module>
     </modules>
     <dependencies>
         <!--<dependency>-->
