@@ -2,23 +2,34 @@ package pers.yf.spring.cloud.ext.auth.route;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.web.util.WebUtils;
 import pers.yf.spring.cloud.ext.auth.AuthProperties;
+import sun.net.httpserver.AuthFilter;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
 
 
 public class AutherFilter extends ZuulFilter {
+    protected Logger logger = LoggerFactory.getLogger(AuthFilter.class);
 
     @Autowired
     public AuthProperties authConfiguration;
     @Autowired
-    private UserCacheService userCacheService;
+    private IUserCacheService userCacheService;
+    @Autowired
+    private ForwardCache forwardCache;
+    private AntPathMatcher matcher=new AntPathMatcher();
 
 
     @Override
     public String filterType() {
-        return "pre";
+        return "route";
     }
 
     @Override
@@ -28,28 +39,48 @@ public class AutherFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
-        System.out.println("-------------------------------");
-        RequestContext ctx = RequestContext.getCurrentContext();
-        HttpServletRequest request = ctx.getRequest();
-        String auth = request.getHeader(authConfiguration.getRequestHeader());
-        return auth==null;
+        return !unFilter(RequestContext.getCurrentContext().getRequest());
     }
 
     @Override
     public Object run() {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
-        String token = request.getHeader(authConfiguration.getRequestHeader());
-        // TODO
-        String user = userCacheService.getUserDetialJson(token);
-        if (user == null) {
-            ctx.setSendZuulResponse(false);// 过滤该请求，不对其进行路由
-            ctx.setResponseStatusCode(401);// 返回错误码
-            ctx.setResponseBody("token 已经过期");// 返回错误内容
-        } else {
-            ctx.addZuulRequestHeader(authConfiguration.getForwardHeader(), user);
+        try {
+            Cookie session = null;
+            if ("cookie".equals(authConfiguration.getSessionIn())) {
+                session = WebUtils.getCookie(request, authConfiguration.getSessionId());
+            }
+            if (session != null) {
+                String user = userCacheService.getUserDetialJson(session.getValue());
+                if (user != null && !user.equals("")) {
+                    ctx.addZuulRequestHeader(authConfiguration.getForwardHeader(), user);
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        ctx.setResponseStatusCode(302);
+        ctx.getResponse().setHeader("location", authConfiguration.getAuthService() + authConfiguration.getLoginUrl() + "?redirect=" + URLEncoder.encode(request.getRequestURL().toString()));
+
+        ctx.setSendZuulResponse(false);
 
         return null;
+    }
+
+    protected boolean isLoginRequest(HttpServletRequest request) {
+        return request.getRequestURI().equals(authConfiguration.getLoginUrl());
+    }
+
+    protected boolean unFilter(HttpServletRequest request) {
+        if (authConfiguration.getUnFilter() != null) {
+            for (String pattern : authConfiguration.getUnFilter()) {
+                if (matcher.match(pattern, request.getRequestURI())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

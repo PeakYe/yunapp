@@ -14,7 +14,6 @@
         <module name="spring-cloud-starter-auth" />
         <module name="token" />
         <module name="user-service" />
-        <module name="yunservice" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

@@ -1,6 +1,10 @@
 spring:
   application:
     name: user-service
+  cache:
+    type: ehcache
+    ehcache:
+      config: classpath:/ehcache.xml
 #  cloud:
 #    config:
 #     uri: http://localhost:8888/
@@ -9,22 +13,14 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8080/eureka/  #注册中心地址
+      defaultZone: http://localhost:8081/eureka/  #注册中心地址
   instance:
     hostname: localhost
-    instance-id: http://localhost:8081
+    instance-id: http://localhost:8082
 server:
-  port: 8081
+  port: 8082
 
-security:
-  basic:
-    enabled: false
-  oauth2:
-    client:
-      clientId: client
-      clientSecret: secret
-      accessTokenUri: http://localhost:8081/pers.yf.yunapp.auth/oauth/token
-      userAuthorizationUri: http://localhost:8081/pers.yf.yunapp.auth/oauth/authorize
-    resource:
-      userInfoUri: http://localhost:8081/pers.yf.yunapp.auth/user/me
-      filter-order: 3
+auth:
+  client:
+    enable: true
+  forwardHeader: user

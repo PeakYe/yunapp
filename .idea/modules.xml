@@ -10,7 +10,6 @@
       <module fileurl="file://$PROJECT_DIR$/spring-cloud-starter-auth/spring-cloud-starter-auth.iml" filepath="$PROJECT_DIR$/spring-cloud-starter-auth/spring-cloud-starter-auth.iml" />
       <module fileurl="file://$PROJECT_DIR$/user-service/user-service.iml" filepath="$PROJECT_DIR$/user-service/user-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/yunapp.iml" filepath="$PROJECT_DIR$/yunapp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/yunservice/yunservice.iml" filepath="$PROJECT_DIR$/yunservice/yunservice.iml" />
     </modules>
   </component>
 </project>

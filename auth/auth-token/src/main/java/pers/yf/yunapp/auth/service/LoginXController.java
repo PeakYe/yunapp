@@ -4,6 +4,7 @@ package pers.yf.yunapp.auth.service;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/auth")
@@ -39,5 +40,18 @@ public class LoginXController {
 //        UserDetail user = manager.getCacheUser(token);
 //        return user;
 //    }
+
+    @RequestMapping(
+            produces = {"text/html"}
+    )
+    public String page(){
+        return "xxxx";
+    }
+
+    @RequestMapping
+    @ResponseBody
+    public String json(){
+        return "xxx";
+    }
 
 }

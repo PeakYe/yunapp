@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("auth")
 public class TokenRequestMapping {
 
     @Autowired
@@ -30,10 +29,10 @@ public class TokenRequestMapping {
     @Autowired
     AuthProperties properties;
 
-//    @RequestMapping(value = "/login", method = RequestMethod.GET)
-//    public String loginGet() {
-//        return "auth/login";
-//    }
+    //@RequestMapping(value = "/login", method = RequestMethod.GET)
+    //public String loginGet() {
+    //    return "auth/login";
+    //}
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String loginPost(String username, String password, String redirect, Model model, HttpServletRequest request, HttpServletResponse response) {
@@ -94,6 +93,7 @@ public class TokenRequestMapping {
             return null;
         }
         UserDetail user = cacheUser.getCacheUser(token);
+        cacheUser.removeCacheUser(token);
         return user;
     }
 

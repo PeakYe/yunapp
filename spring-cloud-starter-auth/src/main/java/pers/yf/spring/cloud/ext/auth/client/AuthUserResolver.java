@@ -1,5 +1,6 @@
 package pers.yf.spring.cloud.ext.auth.client;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -18,19 +19,22 @@ public class AuthUserResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
-        methodParameter.getParameterType().equals(UserDetail.class);
-        return false;
+        return methodParameter.getParameterType().equals(UserDetail.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
-        String header = nativeWebRequest.getHeader(authConfiguration.getRequestHeader());
+        String header = nativeWebRequest.getHeader(authConfiguration.getForwardHeader());
         UserDetail user = new UserDetail();
-//        JSONObect jsonpObject = JSONPObject;
-        JSONObject jsonObject = new JSONObject(header);
-        user.setId(jsonObject.getString("id"));
-        user.setUserName(jsonObject.getString("username"));
-//        user.setro(jsonObject.getString("id"));
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(header);
+            user.setId(jsonObject.getString("id"));
+            user.setUserName(jsonObject.getString("userName"));
+        } catch (JSONException e) {
+            System.out.println(header);
+            e.printStackTrace();
+        }
         return user;
     }
 }
