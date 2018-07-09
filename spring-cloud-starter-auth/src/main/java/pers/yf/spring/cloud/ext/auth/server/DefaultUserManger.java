@@ -1,6 +1,7 @@
 package pers.yf.spring.cloud.ext.auth.server;
 
 import pers.yf.spring.cloud.ext.auth.UserDetail;
+import pers.yf.spring.cloud.ext.auth.core.IUserManager;
 
 public class DefaultUserManger implements IUserManager {
     @Override

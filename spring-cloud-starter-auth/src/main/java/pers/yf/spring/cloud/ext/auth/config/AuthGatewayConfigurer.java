@@ -6,12 +6,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClas
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import pers.yf.spring.cloud.ext.auth.AuthProperties;
 import pers.yf.spring.cloud.ext.auth.route.AutherFilter;
 import pers.yf.spring.cloud.ext.auth.route.ForwardCache;
-import pers.yf.spring.cloud.ext.auth.route.IUserCacheService;
+import pers.yf.spring.cloud.ext.auth.core.IUserCacheService;
 import pers.yf.spring.cloud.ext.auth.route.UserCacheService;
 
 @Configuration

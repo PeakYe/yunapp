@@ -1,4 +1,4 @@
-package pers.yf.spring.cloud.ext.auth.server;
+package pers.yf.spring.cloud.ext.auth.core;
 
 import pers.yf.spring.cloud.ext.auth.UserDetail;
 

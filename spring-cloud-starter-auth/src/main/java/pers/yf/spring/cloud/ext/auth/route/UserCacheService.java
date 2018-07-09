@@ -1,16 +1,14 @@
 package pers.yf.spring.cloud.ext.auth.route;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import pers.yf.spring.cloud.ext.auth.AuthProperties;
 import pers.yf.spring.cloud.ext.auth.HttpUtil;
 import pers.yf.spring.cloud.ext.auth.UserDetail;
+import pers.yf.spring.cloud.ext.auth.core.IUserCacheService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,11 +22,11 @@ public class UserCacheService implements IUserCacheService {
     @Autowired
     private AuthProperties authConfiguration;
 
-    @Override
-    @CachePut(cacheNames = "user")
-    public UserDetail getUserDetail(String token) {
-        return restTemplate.getForObject(authConfiguration.getAuthService() + authConfiguration.getLoginUrl() + "/token", UserDetail.class);
-    }
+//    @Override
+//    @CachePut(cacheNames = "user")
+//    public UserDetail getUserDetail(String token) {
+//        return restTemplate.getForObject(authConfiguration.getAuthService() + authConfiguration.getLoginUrl() + "/token", UserDetail.class);
+//    }
 
     @Override
     @Cacheable(value = "user",key = "#token")

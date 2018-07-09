@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.util.WebUtils;
 import pers.yf.spring.cloud.ext.auth.AuthProperties;
+import pers.yf.spring.cloud.ext.auth.core.IUserCacheService;
 import sun.net.httpserver.AuthFilter;
 
 import javax.servlet.http.Cookie;
@@ -22,14 +23,14 @@ public class AutherFilter extends ZuulFilter {
     public AuthProperties authConfiguration;
     @Autowired
     private IUserCacheService userCacheService;
-    @Autowired
-    private ForwardCache forwardCache;
+//    @Autowired
+//    private ForwardCache forwardCache;
     private AntPathMatcher matcher=new AntPathMatcher();
 
 
     @Override
     public String filterType() {
-        return "route";
+        return "pre";
     }
 
     @Override

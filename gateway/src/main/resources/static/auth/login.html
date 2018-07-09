@@ -180,7 +180,7 @@
                 this.form.logining=true;
                 var that=this;
                 if (this.nameChange() && this.pwdChange()) {
-                    axios.post('/auth/login', this.form).then(function (resp) {
+                    axios.post('/zuul/login', this.form).then(function (resp) {
                         console.log(resp.data);
                         if (resp.data.code == 'ok') {
                             document.cookie = "SESSION=" + resp.data.data + ";path=/";

@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import pers.yf.spring.cloud.ext.auth.AuthProperties;
+import pers.yf.spring.cloud.ext.auth.core.IUserManager;
 import pers.yf.spring.cloud.ext.auth.server.DefaultUserManger;
-import pers.yf.spring.cloud.ext.auth.server.IUserManager;
 import pers.yf.spring.cloud.ext.auth.server.TokenRequestMapping;
 import pers.yf.spring.cloud.ext.auth.server.ServerUserCache;
 

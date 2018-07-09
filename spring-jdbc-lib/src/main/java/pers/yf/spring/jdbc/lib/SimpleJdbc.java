@@ -50,9 +50,12 @@ public class SimpleJdbc {
             for (Field field : fields) {
                 Column anon = field.getAnnotation(Column.class);
                 if (anon != null) {
-                    sql1.append(anon.value()).append(",");
-                    sql2.append("?,");
-                    params.add(field.get(object));
+                    Object val=field.get(object);
+                    if (val != null) {
+                        sql1.append(anon.value()).append(",");
+                        sql2.append("?,");
+                        params.add(field.get(object));
+                    }
                 }
             }
             sql1.deleteCharAt(sql1.length() - 1);

@@ -14,8 +14,8 @@ server:
   port: 8080
 
 auth:
-  route:
-    enable: true
+#  route:
+#    enable: true
   forwardHeader: user
   requestHeader:
   sessionIn: cookie
@@ -32,5 +32,5 @@ zuul:
 #      path: /user/**
 #      url: http://localhost:8082/
     user-service: /user/**
-    auth-service: /auth/**
+#    auth-service: /auth/**
   ignored-patterns: /*/api/**,/**/*.html

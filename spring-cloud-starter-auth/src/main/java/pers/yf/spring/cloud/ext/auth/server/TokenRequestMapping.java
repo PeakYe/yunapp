@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import pers.yf.spring.cloud.ext.auth.AuthProperties;
 import pers.yf.spring.cloud.ext.auth.UserDetail;
+import pers.yf.spring.cloud.ext.auth.core.IUserManager;
+import pers.yf.spring.cloud.ext.auth.core.LoginReq;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
