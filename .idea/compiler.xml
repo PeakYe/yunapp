@@ -16,6 +16,7 @@
         <module name="springjdbclib" />
         <module name="token" />
         <module name="user-service" />
+        <module name="webnote" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -24,15 +25,16 @@
       <module name="auth-api" target="1.8" />
       <module name="auth-core" target="1.8" />
       <module name="auth-token" target="1.8" />
-      <module name="eureka" target="1.6" />
-      <module name="gateway" target="1.6" />
+      <module name="eureka" target="1.8" />
+      <module name="gateway" target="1.8" />
       <module name="spring-cloud-starter-auth" target="1.6" />
-      <module name="spring-jdbc-lib" target="1.6" />
+      <module name="spring-jdbc-lib" target="1.8" />
       <module name="springjdbclib" target="1.6" />
       <module name="token" target="1.8" />
-      <module name="user-service" target="1.6" />
-      <module name="yunapp" target="1.6" />
-      <module name="yunservice" target="1.6" />
+      <module name="user-service" target="1.8" />
+      <module name="webnote" target="1.8" />
+      <module name="yunapp" target="1.8" />
+      <module name="yunservice" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

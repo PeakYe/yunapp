@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class UserInfoController {
 
@@ -12,7 +14,7 @@ public class UserInfoController {
     UserDao userDao;
 
     @RequestMapping("/registe")
-    public Long registe(String userName,String password){
+    public Long registe(String userName, String password) {
         UserInfo info = new UserInfo();
         info.setUserName(userName);
         info.setPassword(password);
@@ -27,4 +29,10 @@ public class UserInfoController {
         UserInfo info = userDao.selectById(userID);
         return info;
     }
+
+    @RequestMapping("/getAll")
+    public List<UserInfo> get() {
+        return userDao.getAllUser();
+    }
+
 }

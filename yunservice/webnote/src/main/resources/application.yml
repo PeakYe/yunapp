@@ -30,4 +30,3 @@ auth:
   client:
     enable: true
   forwardHeader: user
-

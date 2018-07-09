@@ -1,9 +1,14 @@
 package pers.yf.yunapp.user.service;
 
 
+import pers.yf.spring.jdbc.lib.annotation.Column;
+
 public class UserInfo {
+    @Column("id")
     private Long id;
+    @Column("user_name")
     private String userName;
+    @Column("password")
     private String password;
 
     public Long getId() {

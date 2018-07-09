@@ -1,66 +1,219 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-    <title>登录页面</title>
-    <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        body {
+            background-repeat: space;
+            background-image: url(https://up.enterdesk.com/edpic_source/81/27/aa/8127aa4c6399649d220e5ca2e9cb412c.jpg);
+        }
+
+        #app {
+            position: absolute;
+            max-width: 450px;
+            min-width: 300px;
+            height: 230px;
+            top: 40%;
+            margin-top: -102px;
+            left: 50%;
+            margin-left: -150px;
+            background-color: #fff;
+            padding: 30px;
+            opacity: 0.9;
+            border-radius: 5px;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        .btn-100 {
+            width: 100%;
+        }
+
+        .element {
+            margin-top: 4px;
+        }
+
+        .element:before {
+            content: ""
+        }
+
+        .error {
+            color: red;
+            font-size: 8px;
+            text-align: right;
+            margin-top: 0px;
+            padding-bottom: 2px;
+            margin-bottom: 0px;
+        }
+    </style>
 </head>
+<body>
+<div id="app">
+    <template>
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="登录" name="first">
+                <el-form ref="formlogin" :model="form" label-width="80px" id="form" label-position="right"
+                         :rules="rules1">
 
-<form @submit.prevent="submit" id="form">
-    <p>{{errorinfo}}</p>
-    <p>用户名：<input type="text" name="username" v-model="user.name"></p>
-    <p>密码：<input type="password" name="password" v-model="user.password"></p>
-    <input type="hidden" name="redirect" v-model="user.redirect">
-    <p>
-        <button type="">登录</button>
-    </p>
-</form>
+                    <div class="element">
+                        <p class="error">{{error.nameError}} &nbsp;</p>
+                        <el-input v-model="form.username" maxlength="20" minlength="4" placeholder="请输入用户名/邮箱"
+                                  :rules="[{required:true}]" v-on:change="nameChange">
+                            <template slot="prepend">帐号</template>
+                        </el-input>
+                    </div>
+                    <div class="element">
+                        <p class="error">{{error.pwdError}} &nbsp;</p>
+                        <el-input type="password" v-model="form.password" prop="pwd" auto-complete="off"
+                                  placeholder="请输入密码">
+                            <template slot="prepend">密码</template>
+                        </el-input>
+                    </div>
 
+                    <div class="element">
+                        <p class="error">&nbsp;</p>
+                        <el-button type="primary" @click="onSubmit('formlogin')" :loading="form.logining"
+                                   class="btn-100">登录
+                        </el-button>
+                    </div>
+                </el-form>
+            </el-tab-pane>
+            <el-tab-pane label="注册" name="second">
+                <el-form ref="formReg" :model="form" label-width="80px" id="formReg" label-position="right"
+                         :rules="rules1">
+                    <el-form-item label="邮箱" prop="email" type="email">
+                        <el-input v-model="form.username" placeholder="请输入邮箱"></el-input>
+                    </el-form-item>
+                    <el-form-item label="密码" prop="pwd">
+                        <el-input type="password" v-model="form.password" auto-complete="off"
+                                  placeholder="请输入密码"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="onSubmit('formReg')" :loading="false" class="btn-100">注册
+                        </el-button>
+                    </el-form-item>
+                </el-form>
+            </el-tab-pane>
+        </el-tabs>
+    </template>
+
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
-    var app=new Vue({
-        el: '#form',
+    new Vue({
+        el: '#app',
         data: {
-            user:{
-                name:'admin',
-                password:'123456',
-                redirect:''
+            form: {
+                name: '',
+                logining: false,
+                email: '',
             },
-            errorinfo:''
+            error: {
+                nameError: '',
+                pwdError: '',
+            },
+            activeName: 'first',
+            rules1: {
+                name: [{required: true, message: '请输入用户名', trigger: 'submit'}, {
+                    pattern: "^[a-zA-Z0-9_-]{4,16}$",
+                    message: "请输入正确用户名",
+                    trigger: "blur"
+                }],
+                email: [{required: true, message: '请输入邮箱', trigger: 'submit'}, {
+                    pattern: "^[a-zA-Z0-9_-]{4,16}$",
+                    message: '请输入正确的邮箱地址',
+                    trigger: ['blur', 'change']
+                }],
+                pwd: [{required: true, message: '请输入密码', trigger: 'submit'}]
+            }
         },
-        methods:{
-            submit: function(event){
-                var data='username='+this.user.name+'&password='+this.user.password;
-                axios.post('/auth/login',data).then(res=>{
-                    console.log(res.data);
-                    if(res.data.code=='ok'){
-                        document.cookie="SESSION="+res.data.data+";path=/";
-                        location.href=this.redirect;
-                    }
-                });
+
+        methods: {
+            nameChange() {
+                if (!/^[a-zA-Z0-9_-]{4,16}$/.test(this.form.username)) {
+                    this.error.nameError = '用户名格式错误';
+                    return false;
+                } else {
+                    this.error.nameError = null;
+                    return true;
+                }
+            },
+            pwdChange() {
+                if (!/^.{4,16}$/.test(form.password)) {
+                    this.error.pwdError = '密码格式错误';
+                    return false;
+                } else {
+                    this.error.pwdError = null;
+                    return true;
+                }
+            },
+            onSubmit(formName) {
+                // this.$refs[formName].validate((valid) => {
+                //   if (valid) {
+                //     this.form.logining=true;
+                //     alert('submit!');
+                //   } else {
+                //     console.log('error submit!!');
+                //     return false;
+                //   }
+                //   this.form.logining=false;
+                // });
+                // if(!/^[a-zA-Z0-9_-]{4,16}$/.test(this.form.username)){
+                //    this.error.nameError='用户名格式错误';
+                //    return;
+                // }
+                // if(!/^.{4,16}$/.test(form.password)){
+                //    this.error.pwdError='密码格式错误';
+                //    return;
+                // }
+
+                this.form.logining=true;
+                var that=this;
+                if (this.nameChange() && this.pwdChange()) {
+                    axios.post('/auth/login', this.form).then(function (resp) {
+                        console.log(resp.data);
+                        if (resp.data.code == 'ok') {
+                            document.cookie = "SESSION=" + resp.data.data + ";path=/";
+                            if(this.required!=null) {
+                                location.href = this.redirect;
+                            }else{
+                                that.$message({
+                                    message: '没有重定向地址',
+                                    type: 'warning'
+                                });
+                            }
+                        }else{
+                            that.$message({
+                                message: resp.message,
+                                type: 'warning'
+                            });
+                        }
+                        that.form.logining=false;
+                    }).catch(function (err) {             //
+                        console.log(err);
+                        that.$message({
+                            message: '请求失败',
+                            type: 'warning'
+                        });
+                        that.form.logining=false;
+                    });
+                }
+
+            }, handleClick(tab, event) {
+                console.log(tab, event);
 
             }
         }
     })
-
-    function getRequest() {
-        var url = location.search; //获取url中"?"符后的字串
-        var theRequest = new Object();
-        if (url.indexOf("?") != -1) {
-            var str = url.substr(1);
-            strs = str.split("&");
-            for(var i = 0; i < strs.length; i ++) {
-                theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
-            }
-        }
-        return theRequest;
-    }
-
-    var request=getRequest();
-    if(request.redirect==null) {
-        request.redirect="/user/info"
-    }else {
-        app.redirect=request.redirect;
-    }
-
 </script>
 </html>

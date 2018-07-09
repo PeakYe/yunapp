@@ -1,0 +1,66 @@
+<html>
+
+<head>
+    <title>登录页面</title>
+    <script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<form @submit.prevent="submit" id="form">
+    <p>{{errorinfo}}</p>
+    <p>用户名：<input type="text" name="username" v-model="user.name"></p>
+    <p>密码：<input type="password" name="password" v-model="user.password"></p>
+    <input type="hidden" name="redirect" v-model="user.redirect">
+    <p>
+        <button type="">登录</button>
+    </p>
+</form>
+
+<script>
+    var app=new Vue({
+        el: '#form',
+        data: {
+            user:{
+                name:'admin',
+                password:'123456',
+                redirect:''
+            },
+            errorinfo:''
+        },
+        methods:{
+            submit: function(event){
+                var data='username='+this.user.name+'&password='+this.user.password;
+                axios.post('/auth/login',data).then(res=>{
+                    console.log(res.data);
+                    if(res.data.code=='ok'){
+                        document.cookie="SESSION="+res.data.data+";path=/";
+                        location.href=this.redirect;
+                    }
+                });
+
+            }
+        }
+    })
+
+    function getRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for(var i = 0; i < strs.length; i ++) {
+                theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+    var request=getRequest();
+    if(request.redirect==null) {
+        request.redirect="/user/info"
+    }else {
+        app.redirect=request.redirect;
+    }
+
+</script>
+</html>

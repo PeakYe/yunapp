@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,14 +36,14 @@ public class TokenRequestMapping {
     //}
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String loginPost(String username, String password, String redirect, Model model, HttpServletRequest request, HttpServletResponse response) {
-        UserDetail user = userManager.getUserByName(username);
+    public String loginPost(@RequestBody LoginReq req, Model model, HttpServletRequest request, HttpServletResponse response) {
+        UserDetail user = userManager.getUserByName(req.getUsername());
         boolean validate = false;
         String token = null;
         if (user == null) {
             validate = false;
         } else {
-            if (userManager.validatePassword(user, password)) {
+            if (userManager.validatePassword(user, req.getPassword())) {
                 token = UUID.randomUUID().toString();
                 cacheUser.cacheUser(token, user);
                 response.setHeader(properties.getForwardHeader(), token);
@@ -53,7 +54,7 @@ public class TokenRequestMapping {
         }
 
         if (validate) {
-            if (redirect == null) {
+            if (req.getRedirect() == null) {
                 try {
                     JSONObject json = new JSONObject();
                     json.put("code", "ok");
@@ -64,10 +65,10 @@ public class TokenRequestMapping {
                 }
                 return null;
             }
-            return "redirect:" + redirect.replaceAll("\\[token\\]", token);
+            return "redirect:" + req.getRedirect().replaceAll("\\[token\\]", token);
 
         } else {
-            if (redirect == null) {
+            if (req.getRedirect() == null) {
                 try {
                     JSONObject json = new JSONObject();
                     json.put("code", "valid_err");
@@ -78,7 +79,7 @@ public class TokenRequestMapping {
                 }
                 return null;
             }else{
-                return "redirect:" + redirect.replaceAll("\\[token\\]", token);
+                return "redirect:" + req.getRedirect().replaceAll("\\[token\\]", token);
 
             }
 
