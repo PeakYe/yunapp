@@ -6,10 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pers.yf.spring.cloud.ext.auth.AuthProperties;
-import pers.yf.spring.cloud.ext.auth.core.DefaultUserCacheManager;
-import pers.yf.spring.cloud.ext.auth.core.IUserCacheService;
-import pers.yf.spring.cloud.ext.auth.core.IUserManager;
-import pers.yf.spring.cloud.ext.auth.core.LoginRequestHandler;
+import pers.yf.spring.cloud.ext.auth.core.*;
 import pers.yf.spring.cloud.ext.auth.route.AutherFilter;
 import pers.yf.spring.cloud.ext.auth.route.AutherLoginFilter;
 import pers.yf.spring.cloud.ext.auth.server.DefaultUserManger;
@@ -33,7 +30,7 @@ public class AuthZuulConfiguation {
 
 
     @Bean
-    public LoginRequestHandler loginRequestController(){
+    public LoginRequestHandler LoginRequestHandler(){
         return new LoginRequestHandler();
     }
 
@@ -42,11 +39,16 @@ public class AuthZuulConfiguation {
         return new AutherFilter();
     }
 
-    @Bean
-    public AutherLoginFilter autherLoginFilter() {
-        return new AutherLoginFilter();
-    }
+    //@Bean
+    //public AutherLoginFilter autherLoginFilter() {
+    //    return new AutherLoginFilter();
+    //}
 
+
+    @Bean
+    public LoginRequestController loginRequestController(){
+        return new LoginRequestController();
+    }
 
     @Bean
     @ConditionalOnMissingBean

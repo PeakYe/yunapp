@@ -14,6 +14,7 @@
         <option value="$PROJECT_DIR$/spring-cloud-starter-auth/pom.xml" />
         <option value="$PROJECT_DIR$/gateway/pom.xml" />
         <option value="$PROJECT_DIR$/yunservice/pom.xml" />
+        <option value="$PROJECT_DIR$/yunservice/test/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

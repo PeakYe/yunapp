@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	<!-- import Vue before Element -->
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+	<!-- import JavaScript -->
+	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="/js/common/setting.js"></script>
+
+	<style>
+	.el-header, .el-footer {
+		background-color: #B3C0D1;
+		color: #333;
+		text-align: center;
+		line-height: 60px;
+	}
+
+	.el-aside {
+		background-color: #D3DCE6;
+		color: #333;
+		text-align: center;
+		line-height: 200px;
+	}
+
+	.el-main {
+		background-color: #E9EEF3;
+		color: #333;
+		text-align: center;
+		line-height: 160px;
+	}
+
+	body {
+		margin:0;
+	}
+
+	.el-container:nth-child(5) .el-aside,
+	.el-container:nth-child(6) .el-aside {
+		line-height: 260px;
+	}
+
+	.el-container:nth-child(7) .el-aside {
+		line-height: 320px;
+	}
+
+
+
+	.time {
+		font-size: 13px;
+		color: #999;
+	}
+
+	.bottom {
+		margin-top: 13px;
+		line-height: 12px;
+	}
+
+	.button {
+		padding: 0;
+		float: right;
+	}
+
+	.image {
+		width: 100%;
+		display: block;
+		height: 100px;
+	}
+
+	.clearfix:before,
+	.clearfix:after {
+		display: table;
+		content: "";
+	}
+
+	.clearfix:after {
+		clear: both
+	}
+
+
+	.note-row-class{
+		cursor:pointer;
+	}
+
+	.hidden{
+		display:none;
+	}
+
+
+	.card-list{ white-space: nowrap; display: block; height: 200px; overflow-y: hidden;}
+	.card{ width: 200px; display: inline-block; padding: 5px;  padding-bottom: 15px;  }
+
+
+
+	::-webkit-scrollbar 
+	{ 
+		width: 8px; 
+		height: 8px; 
+		background-color: #ccc; 
+	} 
+
+	/*定义滚动条轨道 内阴影+圆角*/ 
+	::-webkit-scrollbar-track 
+	{ 
+		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1); 
+		border-radius: 4px; 
+		background-color: #eee; 
+	} 
+
+	/*定义滑块 内阴影+圆角*/ 
+	::-webkit-scrollbar-thumb 
+	{ 
+		border-radius: 4px; 
+		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3); 
+		background-color: #ccc; 
+	}
+</style>
+</head>
+<body>
+
+	<div id="hello">
+		<el-collapse-transition>
+			<div  class="card-list" v-show="showCardList" :gutter="12" @mousewheel="cardScroll" ref="cardScroll">
+				<!-- <el-scrollbar id="cardScroll" moveX="100" move-y="100" size-width="100" size-height="100" > -->
+					<!-- <scroller :on-infinite="infinite" ref="myscroller"> -->
+						<div class="card" v-for="(item,index) in noteCards" >
+							<el-card :body-style="{ padding: '0','margin-bottom':'15px' }" >
+								<img src="http://bpic.588ku.com/art_origin_min_pic/18/05/28/fb8e41c01ef15bf98175c08dd549820d.jpg" class="image">
+								<div style="padding: 14px;">
+									<span>{{item.name}}</span>
+									 <div class="bottom clearfix">
+										<!--<time class="time">xxxxxxxxxxxxx</time>-->
+										<!--<el-button type="text" class="button" @click="deletGroup"><i class="el-icon-delete"></i></el-button>-->
+										<el-button type="text" class="button" @click="showCardMange("><i class="el-icon-more" ></i></el-button>
+									</div>
+								</div>
+							</el-card>
+						</div>
+
+						<div class="card"  @click="newNoteCard">
+							<el-card :body-style="{ padding: '0','margin-bottom':'15px' }" >
+								<img src="https://bpic.588ku.com/element_water_img/18/06/14/dc2bbe7afe630eeed5883139999aa856.jpg" class="image">
+								<div style="padding: 14px;">
+									<span>新增笔记本</span>
+								</div>
+							</el-card>
+						</div>
+
+						<el-dialog title="卡片属性" :visible.sync="dialogTableVisible">
+
+						</el-dialog>
+			<!-- </el-scrollbar> -->
+			<!-- </scroller> -->
+			</div>
+		</el-collapse-transition>
+	<el-row :gutter="12">
+
+		<el-col :span="24">
+			<el-menu  class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
+				<el-menu-item index="1" @click="showCardList=!showCardList">我的笔记本</el-menu-item>
+				<el-submenu index="2">
+					<template slot="title">账户</template>
+					<el-menu-item index="2-1">个人中心</el-menu-item>
+					<el-menu-item index="2-2">退出</el-menu-item>
+				</el-submenu>
+				<el-menu-item index="3" disabled>消息中心</el-menu-item>
+				<!-- <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item> -->
+			</el-menu>
+		</el-col>
+	</el-row>
+
+	<el-row :gutter="12">
+
+		<el-col :span="6">
+
+			<el-table :data="tableData5" style="width: 100%"  header-row-class-name="hidden"  row-class-name="note-row-class" @cell-click="openNode
+			" row-click="openNode">
+			<el-table-column type="expand" >
+				<template slot-scope="props">
+					<el-form label-position="left" inline class="demo-table-expand">
+						<el-form-item label=""> <span>{{ props.row.name }}</span>
+						</el-form-item>
+						<el-form-item label=""> <span><el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">移除</el-button></span>
+
+						</el-form-item>
+					</el-form>
+				</template>
+			</el-table-column>
+			<el-table-column label="bbbbbb" prop="name"></el-table-column>
+		</el-table>
+
+	</el-col>
+
+	<el-col :span="18">
+
+		<div class="line-block"  >&nbsp;</div>
+		<el-tabs v-model="nodeTab" type="card" @tab-click=""  >
+			<el-tab-pane  v-for="(item,index) in tabs" :key="item.id" :name="item.name" :label="item.label" >{{item.content}}</el-tab-pane>
+		</el-tabs>
+	</el-col>
+
+</el-row>
+
+</div>
+
+
+</body>
+
+<script type="text/javascript">
+	var app=new Vue({
+		el: '#hello',
+		native: true,
+		data:{
+			showCardList:false,
+			tableData5: [
+//			    {
+//				id: '12987122',
+//				name: '好滋好味鸡蛋仔1',
+//				label: '1'
+//			},
+			],
+			nodeTab:'first',
+			tabs:[],
+			noteCards:[
+			]
+		},
+		mounted () {
+			window.addEventListener('cardScroll', this.cardScroll)
+		},
+		methods:{
+			openNode(row, column, cell, event){
+				console.log(row.id);
+				var hasTab=false;
+				for(var i in this.tabs){
+					if(this.tabs[i].id==row.id){
+						hasTab=true;
+						break;
+					}
+				}
+				if(!hasTab){
+					this.tabs.push({
+						id:row.id,
+						name:row.label,
+						label:row.name,
+						content:row.name
+					})
+				}
+				this.nodeTab=row.label;
+
+			},
+			handleSelect(){
+
+			},
+			cardScroll(event){
+				this.$refs.cardScroll.scrollLeft+=event.deltaY/1.6;
+			},
+			newNoteCard(){
+				var that=this;
+                this.$prompt('请输入卡片名称', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+//                    inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+//                    inputErrorMessage: '邮箱格式不正确'
+                }).then(({ value }) => {
+
+                    axios.post('/note/group/create',{name:value}).then(function(data){
+						that.noteCards.push({
+							id:data,
+							name:value
+						});
+                    }).catch(function (e) {
+						that.$message({
+							type:'error',
+							message:'创建失败'
+						})
+                    })
+                }).catch((e) => {
+//                    this.$message({
+//                        type: 'info',
+//                        message: '取消输入'
+//                    });
+                });
+			}
+		}
+	});
+
+
+
+	axios.get('/note/group/list').then(function(data){
+		for(var obj in data){
+		    app.noteCards.push(data[obj]);
+		}
+	});
+
+
+
+</script>
+</html>

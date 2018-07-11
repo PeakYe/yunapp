@@ -21,9 +21,9 @@ auth:
   sessionIn: cookie
   sessionId: SESSION
   loginUrl: /auth/login.html
-  tokenUrl: /auth/token
-  authService: http://localhost:8080
-  unFilter: /auth/**
+#  tokenUrl: /auth/token
+#  authService: http://localhost:8080
+#  unFilter: /auth/**
 
 
 zuul:
@@ -32,5 +32,6 @@ zuul:
 #      path: /user/**
 #      url: http://localhost:8082/
     user-service: /user/**
+    note-service: /note/**
 #    auth-service: /auth/**
   ignored-patterns: /*/api/**,/**/*.html

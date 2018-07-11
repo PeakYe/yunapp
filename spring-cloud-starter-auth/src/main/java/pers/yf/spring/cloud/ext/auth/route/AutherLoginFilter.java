@@ -8,6 +8,7 @@ import pers.yf.spring.cloud.ext.auth.core.LoginRequestHandler;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Deprecated
 public class AutherLoginFilter extends ZuulFilter {
 
     @Autowired

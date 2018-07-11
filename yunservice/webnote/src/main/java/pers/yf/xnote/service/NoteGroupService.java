@@ -9,10 +9,11 @@ import pers.yf.xnote.dao.model.NoteGroup;
 import pers.yf.xnote.dao.model.NoteGroupDao;
 
 import java.util.Date;
+import java.util.List;
 
 
 @RestController
-@RequestMapping("note/group")
+@RequestMapping("/group")
 public class NoteGroupService {
 
     @Autowired
@@ -31,5 +32,11 @@ public class NoteGroupService {
     @RequestMapping("delete")
     public boolean delete(@RequestBody String groupId, UserDetail userDetail) {
         return noteGroupDao.deleteUserNoteGroup(userDetail.getId(), groupId);
+    }
+
+
+    @RequestMapping("list")
+    public List<NoteGroup> list(UserDetail userDetail) {
+        return noteGroupDao.getUserNoteGroups(userDetail.getId());
     }
 }

@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/gateway/gateway.iml" filepath="$PROJECT_DIR$/gateway/gateway.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-cloud-starter-auth/spring-cloud-starter-auth.iml" filepath="$PROJECT_DIR$/spring-cloud-starter-auth/spring-cloud-starter-auth.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-jdbc-lib/spring-jdbc-lib.iml" filepath="$PROJECT_DIR$/spring-jdbc-lib/spring-jdbc-lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yunservice/test/test.iml" filepath="$PROJECT_DIR$/yunservice/test/test.iml" />
       <module fileurl="file://$PROJECT_DIR$/user-service/user-service.iml" filepath="$PROJECT_DIR$/user-service/user-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/yunservice/webnote/webnote.iml" filepath="$PROJECT_DIR$/yunservice/webnote/webnote.iml" />
       <module fileurl="file://$PROJECT_DIR$/yunapp.iml" filepath="$PROJECT_DIR$/yunapp.iml" />

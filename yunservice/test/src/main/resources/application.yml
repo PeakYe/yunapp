@@ -1,16 +1,16 @@
 spring:
   application:
-    name: note-service
+    name: xxx-service
   cache:
     type: ehcache
     ehcache:
       config: classpath:/ehcache.xml
 
-  datasource:
-    url: jdbc:mysql://47.94.106.96/ideal?autoReconnect=true&useUnicode=true&characterEncoding=utf-8
-    username: mysql
-    password: 123456
-    driver-class-name: com.mysql.jdbc.Driver
+#  datasource:
+#    url: jdbc:mysql://47.94.106.96/ideal?autoReconnect=true&useUnicode=true&characterEncoding=utf-8
+#    username: mysql
+#    password: 123456
+#    driver-class-name: com.mysql.jdbc.Driver
 #  cloud:
 #    config:
 #     uri: http://localhost:8888/
@@ -24,9 +24,13 @@ eureka:
     hostname: localhost
     instance-id: http://localhost:8082
 server:
-  port: 8082
+  port: 8888
 
 auth:
   client:
     enable: true
   forwardHeader: user
+
+spring.http.multipart:
+  maxFileSize: 1024MB
+  maxRequestSize: 1024MB

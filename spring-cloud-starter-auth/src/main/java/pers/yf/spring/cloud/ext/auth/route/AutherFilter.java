@@ -13,6 +13,7 @@ import sun.net.httpserver.AuthFilter;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.URLEncoder;
 
 
@@ -23,9 +24,9 @@ public class AutherFilter extends ZuulFilter {
     public AuthProperties authConfiguration;
     @Autowired
     private IUserCacheService userCacheService;
-//    @Autowired
+    //    @Autowired
 //    private ForwardCache forwardCache;
-    private AntPathMatcher matcher=new AntPathMatcher();
+    private AntPathMatcher matcher = new AntPathMatcher();
 
 
     @Override
@@ -62,9 +63,16 @@ public class AutherFilter extends ZuulFilter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ctx.setResponseStatusCode(302);
-        ctx.getResponse().setHeader("location", authConfiguration.getAuthService() + authConfiguration.getLoginUrl() + "?redirect=" + URLEncoder.encode(request.getRequestURL().toString()));
 
+        //try {
+        //    ctx.getResponse().getWriter().write("RE_LOGIN");
+        //} catch (IOException e) {
+        //    e.printStackTrace();
+        //}
+        //ctx.setResponseStatusCode(302);
+        //ctx.getResponse().setHeader("location", authConfiguration.getAuthService() + authConfiguration.getLoginUrl() + "?redirect=" + URLEncoder.encode(request.getRequestURL().toString()));
+
+        ctx.setResponseStatusCode(401);
         ctx.setSendZuulResponse(false);
 
         return null;

@@ -50,6 +50,7 @@ public class SimpleJdbc {
             for (Field field : fields) {
                 Column anon = field.getAnnotation(Column.class);
                 if (anon != null) {
+                    field.setAccessible(true);
                     Object val=field.get(object);
                     if (val != null) {
                         sql1.append(anon.value()).append(",");

@@ -10,6 +10,7 @@ import pers.yf.spring.cloud.ext.auth.server.ServerUserCache;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class LoginRequestHandler {
 
     //    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String loginPost(HttpServletRequest request, HttpServletResponse response) {
-        String value = request.getQueryString();
+        String value = getRequestPayload(request);
         JSONObject jsonReq = new JSONObject(value);
         LoginReq req = new LoginReq();
         req.setUsername(jsonReq.getString("username"));
@@ -42,8 +43,8 @@ public class LoginRequestHandler {
             if (userManager.validatePassword(user, req.getPassword())) {
                 token = UUID.randomUUID().toString();
                 cacheUser.cacheUser(token, user);
-                response.setHeader(properties.getForwardHeader(), token);
-                response.addCookie(new Cookie("token", token));
+                //response.setHeader(properties.getForwardHeader(), token);
+                //response.addCookie(new Cookie("token", token));
                 validate = true;
             }
 
@@ -53,7 +54,7 @@ public class LoginRequestHandler {
             try {
                 JSONObject json = new JSONObject();
                 json.put("code", "ok");
-                json.put("data", token);
+                json.put("token", token);
                 response.getWriter().write(json.toString());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -75,5 +76,20 @@ public class LoginRequestHandler {
 
     }
 
+
+    private String getRequestPayload(HttpServletRequest req) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            BufferedReader reader = req.getReader();
+            char[] buff = new char[1024];
+            int len;
+            while ((len = reader.read(buff)) != -1) {
+                sb.append(buff, 0, len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
 
 }
