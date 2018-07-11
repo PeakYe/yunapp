@@ -9,16 +9,13 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.util.WebUtils;
 import pers.yf.spring.cloud.ext.auth.AuthProperties;
 import pers.yf.spring.cloud.ext.auth.core.IUserCacheService;
-import sun.net.httpserver.AuthFilter;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.net.URLEncoder;
 
 
 public class AutherFilter extends ZuulFilter {
-    protected Logger logger = LoggerFactory.getLogger(AuthFilter.class);
+    protected Logger logger = LoggerFactory.getLogger(AutherFilter.class);
 
     @Autowired
     public AuthProperties authConfiguration;

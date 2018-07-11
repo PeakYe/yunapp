@@ -18,8 +18,8 @@ public class NoteGroupDao extends SimpleJdbc {
         return (List<NoteGroup>) super.list("select * from note_group where creater_id=?", new Object[]{userId},NoteGroup.class);
     }
 
-    public boolean deleteUserNoteGroup(String userId, String groupId) {
-        int i=jdbcTemplate.update("delete from xnote_group where id=? and creater_id=? ",new Object[]{groupId,userId});
+    public boolean deleteUserNoteGroup(String userId, Long groupId) {
+        int i=jdbcTemplate.update("delete from note_group where id=? and creater_id=? ",new Object[]{groupId,userId});
         return i > 0;
     }
 }
