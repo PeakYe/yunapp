@@ -63,11 +63,11 @@ public class UploadClient {
     }
 
     public static void main(String[] args) throws Exception {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 300; i++) {
             Thread thread = new Thread() {
                 @Override
                 public void run() {
-                    String body = fileload("http://localhost:8888/test/upload", new File("D:\\回收备份\\FileRecv\\IMG_1322.mp4"));
+                    String body = fileload("http://localhost:8888/test/upload", new File("D:\\回收备份\\FileRecv\\IMG_1323.mp4"));
                     System.out.println(body);
                     super.run();
                 }

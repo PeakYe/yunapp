@@ -51,7 +51,7 @@ public class SimpleJdbc {
                 Column anon = field.getAnnotation(Column.class);
                 if (anon != null) {
                     field.setAccessible(true);
-                    Object val=field.get(object);
+                    Object val = field.get(object);
                     if (val != null) {
                         sql1.append(anon.value()).append(",");
                         sql2.append("?,");
@@ -117,6 +117,14 @@ public class SimpleJdbc {
 
     protected List<?> list(String sql, Object[] args, final Class clazz) {
         return jdbcTemplate.query(sql, args, creaetRowMapper(clazz));
+    }
+
+    protected List<?> list(final Class clazz, String sql, Object... args) {
+        return jdbcTemplate.query(sql, args, creaetRowMapper(clazz));
+    }
+
+    protected int delete(String sql, Object... paramters) {
+        return jdbcTemplate.update(sql, paramters);
     }
 
 }
