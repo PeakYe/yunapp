@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import pers.yf.spring.jdbc.lib.annotation.Column;
+import pers.yf.spring.jdbc.lib.annotation.Id;
 import pers.yf.spring.jdbc.lib.annotation.RepEntity;
 import pers.yf.spring.jdbc.lib.annotation.Table;
 
@@ -48,8 +49,21 @@ public class SimpleJdbc {
             //Object t = object.getClass().newInstance();
             Field[] fields = object.getClass().getDeclaredFields();
             for (Field field : fields) {
+                String columnName = null;
                 Column anon = field.getAnnotation(Column.class);
                 if (anon != null) {
+                    columnName = anon.value();
+
+
+                } else {
+                    Id anonId = field.getAnnotation(Id.class);
+                    if (anonId != null) {
+                        columnName = anonId.value();
+                    }
+                }
+
+                if (columnName != null) {
+
                     field.setAccessible(true);
                     Object val = field.get(object);
                     if (val != null) {
