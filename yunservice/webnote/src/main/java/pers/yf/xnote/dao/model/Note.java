@@ -6,10 +6,10 @@ import pers.yf.spring.jdbc.lib.annotation.Table;
 
 import java.util.Date;
 
-@Table("blog")
+@Table("note")
 public class Note {
 
-    @Id("blog")
+    @Id("id")
     private Long id;
 
     @Column("create_time")
@@ -25,7 +25,7 @@ public class Note {
     private Long groupId;
 
     @Column("type")
-    private Byte type;
+    private Integer type;
 
     @Column("label")
     private String label;
@@ -85,11 +85,11 @@ public class Note {
         this.groupId = groupId;
     }
 
-    public Byte getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(Byte type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 

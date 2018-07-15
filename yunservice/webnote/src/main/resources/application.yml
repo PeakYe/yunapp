@@ -30,3 +30,8 @@ auth:
   client:
     enable: true
   forwardHeader: user
+
+
+file:
+  upload:
+    path: /home/data/xnote/upload

@@ -34,6 +34,11 @@
 
         body {
             margin: 0;
+            height: 100%;
+            position: absolute;
+            width: 100%;
+            left: 0;
+            top: 0;
         }
 
         .el-container:nth-child(5) .el-aside,
@@ -118,8 +123,26 @@
             background-color: #ccc;
         }
 
-        .note{ padding: 10px; margin: 3px; border-bottom: 1px solid #ccc; font-size:16px; color:#666; cursor: pointer;}
-        .note:hover {background-color: #D3DCE6        }
+        .note {
+            padding: 10px;
+            margin: 0px;
+            border-bottom: 1px solid #ccc;
+            font-size: 16px;
+            color: #666;
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .note:hover {
+            background-color: #D3DCE6
+        }
+
+        .frame-pan {
+            border: none;
+            height: 100%;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -129,8 +152,8 @@
         <div class="card-list" v-show="showCardList" :gutter="12" @mousewheel="cardScroll" ref="cardScroll">
             <!-- <el-scrollbar id="cardScroll" moveX="100" move-y="100" size-width="100" size-height="100" > -->
             <!-- <scroller :on-infinite="infinite" ref="myscroller"> -->
-            <div class="card" v-for="(item,index) in noteCards">
-                <el-card :body-style="{ padding: '0','margin-bottom':'0px' }">
+            <div class="card" v-for="(item,index) in noteCards" @click="openCard(item)">
+                <el-card :body-style="{ padding: '0','margin-bottom':'0px' }"  shadow="hover">
                     <img src="http://bpic.588ku.com/art_origin_min_pic/18/05/28/fb8e41c01ef15bf98175c08dd549820d.jpg"
                          class="image">
                     <div style="padding: 14px;">
@@ -146,19 +169,20 @@
 
             </div>
 
-            <div class="card" @click="newNoteCard" >
-                <el-card :body-style="{ padding: '0','margin-bottom':'0px' }">
-                    <img src="https://bpic.588ku.com/element_water_img/18/06/14/dc2bbe7afe630eeed5883139999aa856.jpg"
-                         class="image">
-                    <div style="padding: 14px;">
-                        <span>新增笔记本</span>
-                    </div>
-                </el-card>
-            </div>
+            <!--<div class="card" @click="newNoteCard">-->
+                <!--<el-card :body-style="{ padding: '0','margin-bottom':'0px' }" shadow="hover">-->
+                    <!--<img src="https://bpic.588ku.com/element_water_img/18/06/14/dc2bbe7afe630eeed5883139999aa856.jpg"-->
+                         <!--class="image">-->
+                    <!--<div style="padding: 14px;">-->
+                        <!--<span>新增笔记本</span>-->
+                    <!--</div>-->
+                <!--</el-card>-->
+            <!--</div>-->
 
             <el-dialog title="卡片属性" :visible="showCardDetail" @close="closeNoteCard">
-                {{selectedCard.name}}
-                <el-button style="float: right; padding: 3px 0" type="text" @click="deleteCard(selectedCard.id)">删除
+                {{currentManagedCard.name}}
+                <el-button style="float: right; padding: 3px 0" type="text" @click="deleteCard(currentManagedCard.id)">
+                    删除
                 </el-button>
             </el-dialog>
             <!-- </el-scrollbar> -->
@@ -170,11 +194,16 @@
         <el-col :span="24">
             <el-menu class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#545c64"
                      text-color="#fff" active-text-color="#ffd04b">
-                <el-menu-item index="1" @click="showCardList=!showCardList">我的笔记本</el-menu-item>
+                <el-menu-item index="1" @click="showCardList=!showCardList">{{currentCard.name}}</el-menu-item>
                 <el-submenu index="2">
                     <template slot="title">账户</template>
                     <el-menu-item index="2-1">个人中心</el-menu-item>
                     <el-menu-item index="2-2">退出</el-menu-item>
+                </el-submenu>
+                <el-submenu index="3">
+                    <template slot="title">笔记</template>
+                    <el-menu-item index="3-1" @click="newNoteCard">创建卡片</el-menu-item>
+                    <el-menu-item index="3-2" @click="createNote">创建笔记</el-menu-item>
                 </el-submenu>
                 <el-menu-item index="3" disabled>消息中心</el-menu-item>
                 <!-- <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item> -->
@@ -182,48 +211,41 @@
         </el-col>
     </el-row>
 
-    <el-row :gutter="12">
+    <!--<div style="position: absolute; top:61px; bottom: 0; left: 0; right: 0;"></div>-->
+    <el-row :gutter="12" >
 
-        <el-col :span="6">
+        <el-col :span="6"  >
 
-            <!--<el-table :data="tableData5" style="width: 100%" header-row-class-name="hidden"-->
-                      <!--row-class-name="note-row-class" @cell-click="openNode-->
-			<!--" row-click="openNode">-->
-                <!--<el-table-column type="expand" label="">-->
-                    <!--<template slot-scope="props">-->
-                        <!--<el-form label-position="left" inline class="demo-table-expand">-->
-                            <!--<el-form-item label=""><span>{{ props.row.name }}</span>-->
-                            <!--</el-form-item>-->
-                            <!--<el-form-item label=""><span><el-button-->
-                                    <!--@click.native.prevent="deleteRow(scope.$index, tableData4)" type="text"-->
-                                    <!--size="small">移除</el-button></span>-->
+            <!--<el-table :data="notes" style="width: 100%" header-row-class-name="hidden"-->
+            <!--row-class-name="note-row-class" @cell-click="openNode-->
+            <!--" row-click="openNode">-->
+            <!--<el-table-column type="expand" label="">-->
+            <!--<template slot-scope="props">-->
+            <!--<el-form label-position="left" inline class="demo-table-expand">-->
+            <!--<el-form-item label=""><span>{{ props.row.name }}</span>-->
+            <!--</el-form-item>-->
+            <!--<el-form-item label=""><span><el-button-->
+            <!--@click.native.prevent="deleteRow(scope.$index, tableData4)" type="text"-->
+            <!--size="small">移除</el-button></span>-->
 
-                            <!--</el-form-item>-->
-                        <!--</el-form>-->
-                    <!--</template>-->
-                <!--</el-table-column>-->
-                <!--<el-table-column label="bbbbbb" prop="name"></el-table-column>-->
+            <!--</el-form-item>-->
+            <!--</el-form>-->
+            <!--</template>-->
+            <!--</el-table-column>-->
+            <!--<el-table-column label="bbbbbb" prop="name"></el-table-column>-->
             <!--</el-table>-->
 
+            <div v-bind:style="{height: leftHeight+'px',overflow:'auto'}" >
+                <div v-for="(item,index) in currentNoteList"  slot="reference">
 
-            <div v-for="(item,index) in tableData5" >
+                        <div class="note" @click="openNode(item)" v-on:contextmenu.prevent="rightClick($event,item)" style="white-space: nowrap;">
+                            <i class="el-icon-tickets"></i>&nbsp;{{item.title}}
+                        </div>
 
-                <div class="note" style=""  @click="openNode(item)" @contextmenu="rightClick" >
-                    <i class="el-icon-tickets"></i>&nbsp;{{item.name}}
 
-
+                    <!--manual-->
                 </div>
-                <!--<el-popover-->
-                        <!--ref="popover"-->
-                        <!--placement="right"-->
-                        <!--title="标题"-->
-                        <!--width="200"-->
-                        <!--trigger="click"-->
-                        <!--value=""-->
-                        <!--content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。">-->
-                <!--</el-popover>-->
             </div>
-
 
 
         </el-col>
@@ -231,9 +253,21 @@
         <el-col :span="18">
 
             <div class="line-block">&nbsp;</div>
-            <el-tabs v-model="nodeTab" type="card" @tab-click="">
-                <el-tab-pane v-for="(item,index) in tabs" :key="item.id" :name="item.name" :label="item.label">
-                    {{item.content}}
+            <el-tabs v-model="nodeTab" type="card" @tab-click="" closable @tab-remove="removeTab">
+                <el-tab-pane v-for="(item,index) in tabs" :key="item.id" :name="item.id+''" :label="item.title">
+                    <div :style="' height: '+textHeight+'px;'">
+                        <el-popover
+                                placement="bottom"
+                                trigger="hover" >
+                            <div style="text-align: right; margin: 0;">
+                                <el-button size="mini" type="text" @click="deleteNote(item)">删除</el-button>
+                                <el-button size="mini" type="text" @click="renameNote(item)">重命名</el-button>
+                            </div>
+                            <el-button slot="reference" type="primary" icon="el-icon-edit" circle style="z-index:1000; position: absolute; right: 20px;"></el-button>
+                        </el-popover>
+                        <iframe :src="'/note/mkdown_edit.html?id='+item.id" frameborder="0" class="frame-pan"></iframe>
+
+                    </div>
                 </el-tab-pane>
 
 
@@ -254,43 +288,80 @@
         data: {
             showCardList: false,
             showCardDetail: false,
-            selectedCard: {
-                id: 0,
-                name: ''
+            currentCard: {
+                name: '笔记本'
             },
+            currentManagedCard: {
+                id: 0,
+                name: '笔记本'
+            },
+            closeIframe: true,
             dialogTableVisible: false,
-            tableData5: [
-			    {
-				id: '12987122',
-				name: '好滋好味鸡蛋仔1',
-				label: '1'
-			}
-            ],
-            nodeTab: 'first',
+            notes: {},
+            currentNoteList:[],
+            nodeTab: null,
             tabs: [],
-            noteCards: []
+            noteCards: [],
+
+            textHeight: 400,
+            leftHeight: 400
         },
         mounted() {
-            window.addEventListener('cardScroll', this.cardScroll)
+            window.addEventListener('cardScroll', this.cardScroll);
+            this.textHeight = document.body.offsetHeight - 140;
+            this.leftHeight = document.body.offsetHeight - 61;
+            var that=this;
+
+
+            axios.get('/note/group/list').then(function (data) {
+                var noCard=localStorage.cardId==null;
+                for (var i=0;i<data.length; i++) {
+                    app.noteCards.push(data[i]);
+                    if(!noCard && data[i].id==localStorage.cardId){
+                        that.openCard(data[i]);
+                    }
+                }
+
+
+            });
+
         },
         methods: {
             showCardMange(index) {
-                this.selectedCard = this.noteCards[index];
-                this.selectedCard.index = index;
+                this.currentManagedCard = this.noteCards[index];
+                this.currentManagedCard.index = index;
                 this.showCardDetail = true;
             },
-            closeNoteCard(){
-              this.showCardDetail=false;
+            openCard(card) {
+                var that = this;
+                if (this.notes[card.id] == null) {
+                    axios.post('/note/note/groupNotes',"id="+card.id).then(function (data) {
+                        that.currentNoteList=data;
+                        that.notes[card.id] = data;
+                    }).catch(function (e) {
+                        console.error(e);
+                    })
+                }
+                that.currentCard = card;
+                that.currentNoteList=this.notes[card.id];
+                localStorage.cardId=card.id;
+            },
+            closeNoteCard() {
+                this.showCardDetail = false;
+            },
+            removeTab(e) {
+                console.log(e)
+
             },
             deleteCard() {
 
                 var that = this;
-                this.$confirm('确认删除卡片“' + this.selectedCard.name + '”?', '提示', {
+                this.$confirm('确认删除卡片“' + this.currentManagedCard.name + '”?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    axios.post('/note/group/delete', 'groupId=' + this.selectedCard.id).then(function (data) {
+                    axios.post('/note/group/delete', 'groupId=' + this.currentManagedCard.id).then(function (data) {
                         if (data) {
                             that.$message({
                                 type: 'info',
@@ -298,12 +369,12 @@
                             });
                             that.showCardDetail = false;
 
-                            var index=that.selectedCard.index;
-                            that.selectedCard={};
-                            that.noteCards.splice(index,1);
+                            var index = that.currentManagedCard.index;
+                            that.currentManagedCard = {};
+                            that.noteCards.splice(index, 1);
                         }
                     }).catch((e) => {
-                        console.log(e)
+                        console.log(e);
                     })
 
                 }).catch(() => {
@@ -311,42 +382,70 @@
                 });
 
             },
-            openNode(row, column, cell, event) {
-                console.log(row.id);
+            openNode(note) {
                 var hasTab = false;
                 for (var i in this.tabs) {
-                    if (this.tabs[i].id == row.id) {
+                    if (this.tabs[i].id == note.id) {
                         hasTab = true;
                         break;
                     }
                 }
                 if (!hasTab) {
-                    this.tabs.push({
-                        id: row.id,
-                        name: row.label,
-                        label: row.name,
-                        content: row.name
-                    })
+                    this.tabs.push(note)
                 }
-                this.nodeTab = row.label;
+                this.nodeTab = note.id+'';
 
             },
-            rightClick(e){
-                e.stopPropagation();
+            deleteNote(item,index){
+                var that=this;
+                axios.post('/note/note/delete','id='+item.id).then(function (data) {
+                    if(data){
+                        for(var i in that.currentNoteList){
+                            if(that.currentNoteList[i].id==item.id){
+                                that.currentNoteList.splice(i,1);
+                                for(var j in that.tabs) {
+                                    if (that.tabs[j].id == item.id) {
+                                        that.tabs.splice(j,1);
+                                        if(that.tabs[j]!=null){
+                                            that.nodeTab=that.tabs[j].id+'';
+                                        }
+                                        break;
+                                    }
+                                }
 
-            }
-            ,
+                                break;
+                            }
+                        }
+                    }
+                }).catch(function () {
+
+                })
+
+            },
+            renameNote(item){
+                this.$prompt('重命名“' + item.title + '”?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                }).then(({value}) => {
+                    item.title=value;
+                }).catch(function (e) {
+                    console.log(e)
+                })
+            },
+            rightClick(e,item) {
+                // console.log(item)
+                // e.stopPropagation();
+                item.popoverShow=true;
+            },
             handleSelect() {
 
-            }
-            ,
+            },
             cardScroll(event) {
                 this.$refs.cardScroll.scrollLeft += event.deltaY / 1.6;
-            }
-            ,
+            },
             newNoteCard() {
                 var that = this;
-                this.$prompt('请输入卡片名称', '提示', {
+                this.$prompt('输入卡片名称', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
 //                    inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
@@ -370,16 +469,37 @@
 //                        message: '取消输入'
 //                    });
                 });
+            },
+            createNote() {
+                var that = this;
+                this.$prompt('输入笔记本名称', '标题', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+//                    inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+//                    inputErrorMessage: '邮箱格式不正确'
+                }).then(({value}) => {
+                    axios.post('/note/note/save', {title: value,groupId:that.currentCard.id}).then(function (data) {
+                        var note={
+                            id: data,
+                            groupId: that.currentCard.id,
+                            title: value
+                        };
+                        that.currentNoteList.push(note);
+                        that.openNode(note);
+                    }).catch(function (e) {
+                        that.$message({
+                            type: 'error',
+                            message: '创建失败'
+                        })
+                    })
+                }).catch(function () {
+
+                })
             }
         }
     });
 
 
-    axios.get('/note/group/list').then(function (data) {
-        for (var obj in data) {
-            app.noteCards.push(data[obj]);
-        }
-    });
 
 
 </script>

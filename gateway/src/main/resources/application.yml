@@ -35,3 +35,8 @@ zuul:
     note-service: /note/**
 #    auth-service: /auth/**
   ignored-patterns: /*/api/**,/**/*.html
+
+
+file:
+  upload:
+    path: /home/data/xnote/upload
