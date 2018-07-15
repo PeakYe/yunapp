@@ -3,7 +3,6 @@ package pers.yf.spring.jdbc.lib;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -24,15 +23,12 @@ public class SimpleJdbc {
 
     protected Number insert(final String sql, final Object[] args) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
-                PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                for (int i = 0; i < args.length; i++) {
-                    ps.setObject(i + 1, args[i]);
-                }
-                return ps;
+        jdbcTemplate.update(conn -> {
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            for (int i = 0; i < args.length; i++) {
+                ps.setObject(i + 1, args[i]);
             }
+            return ps;
         }, keyHolder);
         return keyHolder.getKey();
     }
@@ -53,8 +49,6 @@ public class SimpleJdbc {
                 Column anon = field.getAnnotation(Column.class);
                 if (anon != null) {
                     columnName = anon.value();
-
-
                 } else {
                     Id anonId = field.getAnnotation(Id.class);
                     if (anonId != null) {
@@ -78,18 +72,18 @@ public class SimpleJdbc {
             sql1.append(sql2);
             return insert(sql1.toString(), params.toArray());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new SimpleJdbcException(e);
         }
     }
 
-    protected Object singleResult(String sql, Object[] args, RowMapper<Object> rowMapper) {
-        List<Object> list = jdbcTemplate.query(sql, args, rowMapper);
+    protected <A> A singleResult(String sql, Object[] args, RowMapper<A> rowMapper) {
+        List<A> list = jdbcTemplate.query(sql, args, rowMapper);
         if (list == null || list.isEmpty()) {
             return null;
         }
 
         if (list.size() > 1) {
-            throw new JDBCException("查询总数超过限定数量1");
+            throw new SimpleJdbcException("查询总数超过限定数量1");
         }
         return list.get(0);
     }
@@ -101,29 +95,40 @@ public class SimpleJdbc {
         return singleResult(sql, args, creaetRowMapper(x));
     }
 
-    protected Object singleResult(String sql, Object[] args, Class clazz) {
+    protected <A> A singleResult(String sql, Object[] args, Class<A> clazz) {
         return singleResult(sql, args, creaetRowMapper(clazz));
     }
 
-    private RowMapper creaetRowMapper(final Class clazz) {
-        return new RowMapper<Object>() {
+    private <A> RowMapper<A> creaetRowMapper(final Class<A> clazz) {
+        return new RowMapper<A>() {
             @Override
-            public Object mapRow(ResultSet resultSet, int i) throws SQLException {
+            public A mapRow(ResultSet resultSet, int i) throws SQLException {
                 try {
-                    Object t = clazz.newInstance();
+                    A t = clazz.newInstance();
                     Field[] fields = clazz.getDeclaredFields();
                     for (Field field : fields) {
+                        String columnName = null;
                         Column anon = field.getAnnotation(Column.class);
                         if (anon != null) {
+                            columnName = anon.value();
+                        } else {
+                            Id anonId = field.getAnnotation(Id.class);
+                            if (anonId != null) {
+                                columnName = anonId.value();
+                            }
+                        }
+
+                        if (columnName != null) {
                             String colName = anon.value();
                             Object val = resultSet.getObject(colName);
                             field.setAccessible(true);
                             field.set(t, val);
                         }
+
                     }
                     return t;
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new SimpleJdbcException(e);
                 }
             }
         };
@@ -139,6 +144,81 @@ public class SimpleJdbc {
 
     protected int delete(String sql, Object... paramters) {
         return jdbcTemplate.update(sql, paramters);
+    }
+
+    protected void updateNotNullWithKey(Object object){
+        Field[] fields = object.getClass().getDeclaredFields();
+
+        StringBuilder sql = new StringBuilder();
+        StringBuilder sqlWhere = new StringBuilder().append(" where ");
+        Table table = object.getClass().getAnnotation(Table.class);
+        sql.append("update ").append(table.value()).append(" set ");
+
+        List<Object> params = new LinkedList<>();
+        for (Field field : fields) {
+            String columnName = null;
+            Column anon = field.getAnnotation(Column.class);
+            if (anon != null) {
+                columnName = anon.value();
+                if (columnName != null ) {
+                    Object fvalue=null;
+                    try {
+                        fvalue=field.get(object);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    if (fvalue != null) {
+                        sql.append(columnName).append("=?,");
+                        params.add(fvalue);
+                    }
+                }
+            } else {
+                Id anonId = field.getAnnotation(Id.class);
+                if (anonId != null) {
+                    columnName = anonId.value();
+                    if(columnName==null){
+                        throw new SimpleJdbcException("主键不能为空");
+                    }
+                    sqlWhere.append(columnName).append("=? and ");
+                }
+
+            }
+        }
+        if (sqlWhere.length() < 6) {
+            throw new SimpleJdbcException("缺少主键信息");
+        }
+        sql.deleteCharAt(sql.length() - 1);
+        sqlWhere.delete(sqlWhere.length() - 5, sqlWhere.length() - 1);
+        sql.append(" ").append(sqlWhere);
+        int  i=this.jdbcTemplate.update(sql.toString(), params.toArray());
+        if (i != 1) {
+            throw new SimpleJdbcException("更新数据错误，行数：" + i);
+        }
+
+    }
+
+
+    public int update(String sql,Object... params){
+        return  jdbcTemplate.update(sql, params);
+    }
+
+    public <A> A singleResult(Class<A> clazz, Object... params) {
+        StringBuilder sql = new StringBuilder();
+        Table table = clazz.getAnnotation(Table.class);
+        sql.append("select * from ").append(table.value()).append(" where ");
+        int ids = 0;
+        for (Field field : clazz.getFields()) {
+            Id id = field.getAnnotation(Id.class);
+            if (id != null) {
+                sql.append(id.value()).append("=? and ");
+                ids++;
+            }
+        }
+        if (ids != params.length) {
+            throw new SimpleJdbcException("主键参数和Id数量不一致");
+        }
+        sql.delete(sql.length() - 5, sql.length() - 1);
+        return  this.singleResult(sql.toString(), params, clazz);
     }
 
 }
