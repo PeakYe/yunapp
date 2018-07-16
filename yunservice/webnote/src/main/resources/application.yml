@@ -5,7 +5,6 @@ spring:
     type: ehcache
     ehcache:
       config: classpath:/ehcache.xml
-
   datasource:
     url: jdbc:mysql://47.94.106.96/ideal?autoReconnect=true&useUnicode=true&characterEncoding=utf-8
     username: mysql
@@ -25,6 +24,23 @@ eureka:
     instance-id: http://localhost:8082
 server:
   port: 8082
+
+ribbon:
+  ReadTimeout: 5000
+  ConnectTimeout: 200
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1
+  eureka:
+    enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
 
 auth:
   client:

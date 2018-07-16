@@ -253,17 +253,18 @@
         <el-col :span="18">
 
             <div class="line-block">&nbsp;</div>
-            <el-tabs v-model="nodeTab" type="card" @tab-click="" closable @tab-remove="removeTab">
-                <el-tab-pane v-for="(item,index) in tabs" :key="item.id" :name="item.id+''" :label="item.title">
+            <el-tabs v-model="nodeTab"  @tab-click="" closable @tab-remove="removeTab">
+                <el-tab-pane v-for="(item,index) in tabs" :key="item.id+''" :name="item.id+''" :label="item.title">
                     <div :style="' height: '+textHeight+'px;'">
                         <el-popover
-                                placement="bottom"
+                                placement="top"
                                 trigger="hover" >
                             <div style="text-align: right; margin: 0;">
+                                <el-button size="mini" type="text" v-on:click.native="openUrl('/note/view.html?id='+item.id)">分享预览</el-button>
                                 <el-button size="mini" type="text" @click="deleteNote(item)">删除</el-button>
                                 <el-button size="mini" type="text" @click="renameNote(item)">重命名</el-button>
                             </div>
-                            <el-button slot="reference" type="primary" icon="el-icon-edit" circle style="z-index:1000; position: absolute; right: 20px;"></el-button>
+                            <el-button slot="reference" type="primary" icon="el-icon-edit" circle style="z-index:1000; position: absolute;bottom:30px; right: 20px;"></el-button>
                         </el-popover>
                         <iframe :src="'/note/mkdown_edit.html?id='+item.id" frameborder="0" class="frame-pan"></iframe>
 
@@ -349,8 +350,22 @@
             closeNoteCard() {
                 this.showCardDetail = false;
             },
-            removeTab(e) {
-                console.log(e)
+            removeTab(targetName) {
+                let tabs = this.tabs;
+                let activeName = this.nodeTab;
+                if (activeName === targetName) {
+                    tabs.forEach((tab, index) => {
+                        if (tab.id+'' === targetName) {
+                            let nextTab = tabs[index + 1] || tabs[index - 1];
+                            if (nextTab) {
+                                activeName = nextTab.id+'';
+                            }
+                        }
+                    });
+                }
+
+                this.nodeTab = activeName;
+                this.tabs = tabs.filter(tab => tab.id != targetName);
 
             },
             deleteCard() {
@@ -495,6 +510,9 @@
                 }).catch(function () {
 
                 })
+            },
+            openUrl(url){
+                window.open(url);
             }
         }
     });
