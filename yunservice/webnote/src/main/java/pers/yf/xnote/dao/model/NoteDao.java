@@ -15,9 +15,9 @@ public class NoteDao extends SimpleJdbc {
         return (List<Note>) super.list(Note.class, "select *from note where group_id=? and creater_id=?", groupId, userId);
     }
 
-    public int updateTitle(Note note, String userId) {
+    public Boolean updateTitle(String title,Long id, String userId) {
         //super.updateNotNullWithKey(note);
-        return super.update("update note set title=? where id=? and creater_id=?", note.getTitle(), note.getId(), userId);
+        return super.update("update note set title=? where id=? and creater_id=?", title, id, userId)>=1;
     }
 
     public boolean updateContent(Note note, String userId) {

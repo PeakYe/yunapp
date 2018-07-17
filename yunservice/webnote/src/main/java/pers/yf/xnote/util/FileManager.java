@@ -109,8 +109,7 @@ public class FileManager {
 			os.close();
 			return file;
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException(e);
 		}
 	}
 	

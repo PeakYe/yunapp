@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import pers.yf.spring.cloud.ext.auth.UserDetail;
 import pers.yf.xnote.dao.model.Note;
 import pers.yf.xnote.dao.model.NoteDao;
+import pers.yf.xnote.service.model.RenameModel;
 
 import java.util.List;
 
@@ -24,9 +25,9 @@ public class NoteService {
         note.setContent(model.getContent());
         note.setGroupId(model.getGroupId());
         if (model.getId() != null) {
-            noteDao.updateContent(note,detail.getId());
+            noteDao.updateContent(note, detail.getId());
         } else {
-            noteDao.createNote(note,detail);
+            noteDao.createNote(note, detail);
         }
 
         return note.getId();
@@ -62,6 +63,11 @@ public class NoteService {
     public List<Note> groupNotes(@RequestParam Long id, UserDetail userDetail) {
         List<Note> notes = noteDao.getGroupNotes(id, userDetail.getId());
         return notes;
+    }
+
+    @RequestMapping(value = "rename", method = RequestMethod.POST)
+    public Boolean rename(@RequestBody RenameModel rnote, UserDetail userDetail) {
+        return noteDao.updateTitle(rnote.getTitle(), rnote.getId(), userDetail.getId());
     }
 
 }

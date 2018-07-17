@@ -71,6 +71,7 @@
 <script>
 
     (function () {
+        var id = co.getUrlParam('id');
         var acen_edit = ace.edit('mdeditor');
 
         var $save=$('#save');
@@ -84,7 +85,7 @@
         // 自动换行
         acen_edit.getSession().setOption('wrap', 'free');
         acen_edit.renderer.setShowPrintMargin(false);
-        ;
+
         console.log(acen_edit);
 
 
@@ -126,6 +127,7 @@
                     scrollTop: (r.prop('scrollHeight') - r.height()) * ((scrollTop) / (scrollHeight - height))
                 }, 300);
             }
+            if(window.noteChanged)  window.noteChanged(id);
         });
 
         acen_edit.on('paste', function (e) {
@@ -211,7 +213,7 @@
                     // document.body.appendChild( img );
                     // acen_edit.insert('![简短的图片]('+e.target.result+') ')
 
-                    axios.post('/note/img/code/upload','code='+e.target.result).then(function (data) {
+                    axios.post('/note/img/code/upload','code='+encodeURIComponent(e.target.result)).then(function (data) {
                         acen_edit.insert('![](/note/img/' + data.data + ')  ');
                     });
 
@@ -232,31 +234,43 @@
             console.log(e)
         });
 
-        // 保存
-        $('#save').click(function () {
-            console.log(acen_edit);
+        // // 保存
+        // window.save=function () {
+        //     console.log(acen_edit);
+        //
+        //     var content = acen_edit.getValue();
+        //     // var i = content.indexOf("\n");
+        //     // var title = acen_edit.getValue().substring(0, i > 0 ? i : (content.length() > 10 ? 10 : content.length))
+        //     var note = {
+        //         id: co.getUrlParam('id'),
+        //         // title: title,
+        //         content: content
+        //     };
+        //     console.log(note)
+        //     axios.post('/note/note/save',note).then(function (data) {
+        //         if (data.data == note.id) {
+        //             $save.text('保存');
+        //             parent.saveNoteCallback(note);
+        //         } else {
+        //             parent.saveNote(data);
+        //         }
+        //     }).catch(function (e) {
+        //
+        //     });
+        //
 
-            var content = acen_edit.getValue();
-            var i = content.indexOf("\n");
-            var title = acen_edit.getValue().substring(0, i > 0 ? i : (content.length() > 10 ? 10 : content.length))
-            var note = {
+
+        window.noteChanged;
+        window.getNote = function () {
+            return {
                 id: co.getUrlParam('id'),
-                // title: title,
-                content: content
-            };
-            console.log(note)
-            axios.post('/note/note/save',note).then(function (data) {
-                if (data.data == note.id) {
-                    $save.text('保存');
-                    parent.saveNoteCallback(note);
-                } else {
-                    parent.saveNote(data);
-                }
-            }).catch(function (e) {
+                content: acen_edit.getValue()
+            }
+        };
 
-            });
-
-        })
+        window.saved=function () {
+            $save.text('保存');
+        }
     })()
 </script>
 </html>

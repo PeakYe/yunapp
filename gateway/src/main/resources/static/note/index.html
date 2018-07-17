@@ -260,13 +260,13 @@
                                 placement="top"
                                 trigger="hover" >
                             <div style="text-align: right; margin: 0;">
-                                <el-button size="mini" type="text" v-on:click.native="openUrl('/note/view.html?id='+item.id)">分享预览</el-button>
-                                <el-button size="mini" type="text" @click="deleteNote(item)">删除</el-button>
-                                <el-button size="mini" type="text" @click="renameNote(item)">重命名</el-button>
+                                <el-button size="mini" type="text" v-on:click.native="openUrl('/note/view.html?id='+item.id)"><i class="el-icon-share"> 分享预览</i></el-button>
+                                <el-button size="mini" type="text" @click="deleteNote(item)"><i class="el-icon-delete"> 删除</i></el-button>
+                                <el-button size="mini" type="text" @click="renameNote(item)"><i class="el-icon-edit"> 重命名</i></el-button>
                             </div>
-                            <el-button slot="reference" type="primary" icon="el-icon-edit" circle style="z-index:1000; position: absolute;bottom:30px; right: 20px;"></el-button>
+                            <el-button slot="reference" type="primary" icon="el-icon-upload" circle style="z-index:1000; position: absolute;bottom:30px; right: 20px;" @click="saveNote(item)"></el-button>
                         </el-popover>
-                        <iframe :src="'/note/mkdown_edit.html?id='+item.id" frameborder="0" class="frame-pan"></iframe>
+                        <iframe :src="'/note/mkdown_edit.html?id='+item.id" :ref="'iframe_'+item.id" frameborder="0" class="frame-pan"></iframe>
 
                     </div>
                 </el-tab-pane>
@@ -405,36 +405,46 @@
                         break;
                     }
                 }
+                note.changed=false;
                 if (!hasTab) {
                     this.tabs.push(note)
                 }
                 this.nodeTab = note.id+'';
-
+                // var win = this.$refs['iframe_'+note.id][0].contentWindow;
+                // win.noteChanged=this.noteChanged;
             },
             deleteNote(item,index){
-                var that=this;
-                axios.post('/note/note/delete','id='+item.id).then(function (data) {
-                    if(data){
-                        for(var i in that.currentNoteList){
-                            if(that.currentNoteList[i].id==item.id){
-                                that.currentNoteList.splice(i,1);
-                                for(var j in that.tabs) {
-                                    if (that.tabs[j].id == item.id) {
-                                        that.tabs.splice(j,1);
-                                        if(that.tabs[j]!=null){
-                                            that.nodeTab=that.tabs[j].id+'';
-                                        }
-                                        break;
-                                    }
-                                }
 
-                                break;
+                var that=this;
+
+                this.$confirm('删除“' + item.title + '”?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                }).then(({value}) => {
+                    axios.post('/note/note/delete','id='+item.id).then(function (data) {
+                        if(data){
+                            for(var i in that.currentNoteList){
+                                if(that.currentNoteList[i].id==item.id){
+                                    that.currentNoteList.splice(i,1);
+                                    for(var j in that.tabs) {
+                                        if (that.tabs[j].id == item.id) {
+                                            that.tabs.splice(j,1);
+                                            if(that.tabs[j]!=null){
+                                                that.nodeTab=that.tabs[j].id+'';
+                                            }
+                                            break;
+                                        }
+                                    }
+
+                                    break;
+                                }
                             }
                         }
-                    }
-                }).catch(function () {
+                    }).catch(function () {
 
+                    })
                 })
+
 
             },
             renameNote(item){
@@ -442,10 +452,33 @@
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                 }).then(({value}) => {
-                    item.title=value;
+                    axios.post('/note/note/rename',{title:value,id:item.id}).then(function (data) {
+                        if(data){
+                            item.title=value;
+                        }
+                    })
                 }).catch(function (e) {
                     console.log(e)
                 })
+            },
+            saveNote(item){
+                var win = this.$refs['iframe_'+item.id][0].contentWindow;
+                var note=win.getNote();
+
+                axios.post('/note/note/save',note).then(function (data) {
+                    if (data == note.id) {
+                        win.saved();
+                    }
+                }).catch(function (e) {
+
+                });
+            },
+            noteChanged(id){
+                for(var i in this.nodeTab){
+                    if(nodeTab[i].id==id){
+                        nodeTab[i].changed=true;
+                    }
+                }
             },
             rightClick(e,item) {
                 // console.log(item)
