@@ -25,7 +25,7 @@ public class Note {
     private Long groupId;
 
     @Column("type")
-    private Integer type;
+    private String type;
 
     @Column("label")
     private String label;
@@ -85,14 +85,6 @@ public class Note {
         this.groupId = groupId;
     }
 
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
     public String getLabel() {
         return label;
     }
@@ -139,5 +131,13 @@ public class Note {
 
     public void setContent(String content) {
         this.content = content == null ? null : content.trim();
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

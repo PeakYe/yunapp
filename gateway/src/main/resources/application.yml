@@ -6,12 +6,12 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8081/eureka/  #注册中心地址
+      defaultZone: http://localhost:8881/eureka/  #注册中心地址
   instance:
     hostname: localhost
-    instance-id: http://localhost:8080
+    instance-id: http://localhost:8880
 server:
-  port: 8080
+  port: 8880
 
 auth:
 #  route:
