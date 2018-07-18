@@ -8,6 +8,14 @@
     <link rel="stylesheet" href="/js/lib/markdown/markdown-my.css">
     <link rel="stylesheet" href="/js/common/common.css">
     <link rel="stylesheet" href="/js/lib/markdown/highlight/highlight-default.css" rel="stylesheet"/>
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- import Vue before Element -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="/js/common/setting.js"></script>
     <!--https://cdnjs.com/libraries/ace/-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/ace.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -61,7 +69,14 @@
 </style>
 <body>
 <div class="toolbar">
-    <span id="save">保存</span>
+    <span id="save"></span>
+    <div style="margin-top: 20px">
+        <el-radio-group v-model="radio5" size="small">
+            <el-radio-button label="编辑"></el-radio-button>
+            <el-radio-button label="E&V" ></el-radio-button>
+            <el-radio-button label="视图"></el-radio-button>
+        </el-radio-group>
+    </div>
 </div>
 <div class="left" id="mdeditor"></div>
 <div class="right scroll-style-default">
@@ -85,9 +100,6 @@
         // 自动换行
         acen_edit.getSession().setOption('wrap', 'free');
         acen_edit.renderer.setShowPrintMargin(false);
-
-        console.log(acen_edit);
-
 
         marked.setOptions({
             renderer: new marked.Renderer(),
@@ -113,7 +125,7 @@
 
         var r = $(".right");
         acen_edit.on('change', function (e) {
-            $save.text('保存*');
+            $save.text('*');
             $(".preview").html(marked(acen_edit.getValue(), {renderer: renderer}));
             var scrollHeight = $(".ace_scrollbar-v").prop('scrollHeight');
             var scrollTop = acen_edit.session.getScrollTop();
@@ -229,7 +241,7 @@
             acen_edit.setValue(data.data.content);
             acen_edit.focus();
             acen_edit.navigateTo(0, 0);
-            $save.text('保存');
+            $save.text('');
         }).catch(function (e) {
             console.log(e)
         });
@@ -269,7 +281,7 @@
         };
 
         window.saved=function () {
-            $save.text('保存');
+            $save.text('');
         }
     })()
 </script>
