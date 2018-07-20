@@ -211,47 +211,28 @@
         </el-col>
     </el-row>
 
-    <!--<div style="position: absolute; top:61px; bottom: 0; left: 0; right: 0;"></div>-->
-    <el-row :gutter="12" >
+    <div style="position: absolute; top:61px; bottom: 0; left: 0; right: 0;">
 
-        <el-col :span="6"  >
-
-            <!--<el-table :data="notes" style="width: 100%" header-row-class-name="hidden"-->
-            <!--row-class-name="note-row-class" @cell-click="openNode-->
-            <!--" row-click="openNode">-->
-            <!--<el-table-column type="expand" label="">-->
-            <!--<template slot-scope="props">-->
-            <!--<el-form label-position="left" inline class="demo-table-expand">-->
-            <!--<el-form-item label=""><span>{{ props.row.name }}</span>-->
-            <!--</el-form-item>-->
-            <!--<el-form-item label=""><span><el-button-->
-            <!--@click.native.prevent="deleteRow(scope.$index, tableData4)" type="text"-->
-            <!--size="small">移除</el-button></span>-->
-
-            <!--</el-form-item>-->
-            <!--</el-form>-->
-            <!--</template>-->
-            <!--</el-table-column>-->
-            <!--<el-table-column label="bbbbbb" prop="name"></el-table-column>-->
-            <!--</el-table>-->
-
-            <div v-bind:style="{height: leftHeight+'px',overflow:'auto'}" >
-                <div v-for="(item,index) in currentNoteList"  slot="reference">
-
-                        <div class="note" @click="openNode(item)" v-on:contextmenu.prevent="rightClick($event,item)" style="white-space: nowrap;">
-                            <i class="el-icon-tickets"></i>&nbsp;{{item.title}}
-                        </div>
-
-
-                    <!--manual-->
+        <div id="floads" style="position: absolute;left: 0;top:0;bottom: 0; width: 300px;">
+            <div class="menu" style="max-height: 100%;">
+                <div v-for="(item,index) in folders" >
+                    <div class="note" @click="openNode(item)" v-on:contextmenu.prevent="noteMenu($event,item)" style="white-space: nowrap;">
+                        <i class="el-icon-tickets"></i>&nbsp;{{item.title}}
+                    </div>
                 </div>
             </div>
 
 
-        </el-col>
+            <div class="menu" ref="rightMenu" v-show="showMenu" v-bind:style="{left:pos.left,top:pos.top}" @blur="hideRightMenu" tabindex="0" v-focus="focus">
+                <!-- <input type="" ref="in" name=""> -->
+                <p v-for="(item) in rightMenu" @click="menuClick(item)">
+                    {{item.name}}
+                </p>
+            </div>
 
-        <el-col :span="18">
+        </div>
 
+        <div class="menu" style="position: absolute;left: 300px;top:0;bottom: 0; right: 0;">
             <div class="line-block">&nbsp;</div>
             <el-tabs v-model="nodeTab"  @tab-click="" closable @tab-remove="removeTab">
                 <el-tab-pane v-for="(item,index) in tabs" :key="item.id+''" :name="item.id+''" :label="item.title">
@@ -267,15 +248,12 @@
                             <el-button slot="reference" type="primary" icon="el-icon-upload" circle style="z-index:1000; position: absolute;bottom:30px; right: 20px;" @click="saveNote(item)"></el-button>
                         </el-popover>
                         <iframe :src="'/note/mkdown_edit.html?id='+item.id" :ref="'iframe_'+item.id" frameborder="0" class="frame-pan"></iframe>
-
                     </div>
                 </el-tab-pane>
-
-
             </el-tabs>
-        </el-col>
+        </div>
+    </div>
 
-    </el-row>
 
 </div>
 
