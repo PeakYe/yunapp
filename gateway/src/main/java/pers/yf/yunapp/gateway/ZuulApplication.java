@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import pers.yf.spring.cloud.ext.auth.config.AuthZuulConfiguation;
 import pers.yf.spring.cloud.ext.auth.core.annon.EnableAuthCenter;
+import pers.yf.yunapp.gateway.config.StaticResourcesConfig;
 
 @SpringBootApplication
 @EnableEurekaClient
@@ -19,6 +20,11 @@ import pers.yf.spring.cloud.ext.auth.core.annon.EnableAuthCenter;
 public class ZuulApplication {
     public static void main(String[] args) {
         SpringApplication.run(ZuulApplication.class, args);
+    }
+
+    @Bean
+    public StaticResourcesConfig staticResourcesConfig() {
+        return new StaticResourcesConfig();
     }
 
 }

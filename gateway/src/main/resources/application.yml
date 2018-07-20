@@ -34,7 +34,7 @@ zuul:
     user-service: /user/**
     note-service: /note/**
 #    auth-service: /auth/**
-  ignored-patterns: /*/api/**,/**/*.html
+  ignored-patterns: /*/api/**,/**/*.html,/**/*.js
 
 
 file:
