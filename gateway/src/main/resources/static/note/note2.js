@@ -1,11 +1,71 @@
-var note=new Vue({
-    el:'#note',
-    data:{
-        tabs:[],
+var app = new Vue({
+    el: '#hello',
+    native: true,
+    data: {
+        showCardList: false,
+        showCardDetail: false,
+        currentCard: {
+            name: '笔记本'
+        },
+        currentManagedCard: {
+            id: 0,
+            name: '笔记本'
+        },
+        closeIframe: true,
+        dialogTableVisible: false,
+        notes: {},
+        currentNoteList:[],
         nodeTab: null,
+        tabs: [],
+        noteCards: [],
+
+        textHeight: 400,
+        leftHeight: 400
     },
-    method:{
-        removeTab:function(targetName) {
+    mounted() {
+        window.addEventListener('cardScroll', this.cardScroll);
+        this.textHeight = document.body.offsetHeight - 140;
+        this.leftHeight = document.body.offsetHeight - 61;
+        var that=this;
+
+
+        // axios.get('/note/group/list').then(function (data) {
+        //     var noCard=localStorage.cardId==null;
+        //     for (var i=0;i<data.length; i++) {
+        //         app.noteCards.push(data[i]);
+        //         if(!noCard && data[i].id==localStorage.cardId){
+        //             that.openCard(data[i]);
+        //         }
+        //     }
+        //
+        //
+        // });
+
+    },
+    methods: {
+        showCardMange(index) {
+            this.currentManagedCard = this.noteCards[index];
+            this.currentManagedCard.index = index;
+            this.showCardDetail = true;
+        },
+        openCard(card) {
+            var that = this;
+            if (this.notes[card.id] == null) {
+                axios.post('/note/note/groupNotes',"id="+card.id).then(function (data) {
+                    that.currentNoteList=data;
+                    that.notes[card.id] = data;
+                }).catch(function (e) {
+                    console.error(e);
+                })
+            }
+            that.currentCard = card;
+            that.currentNoteList=this.notes[card.id];
+            localStorage.cardId=card.id;
+        },
+        closeNoteCard() {
+            this.showCardDetail = false;
+        },
+        removeTab(targetName) {
             let tabs = this.tabs;
             let activeName = this.nodeTab;
             if (activeName === targetName) {
@@ -21,6 +81,35 @@ var note=new Vue({
 
             this.nodeTab = activeName;
             this.tabs = tabs.filter(tab => tab.id != targetName);
+
+        },
+        deleteCard() {
+
+            var that = this;
+            this.$confirm('确认删除卡片“' + this.currentManagedCard.name + '”?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                axios.post('/note/group/delete', 'groupId=' + this.currentManagedCard.id).then(function (data) {
+                    if (data) {
+                        that.$message({
+                            type: 'info',
+                            message: '删除成功'
+                        });
+                        that.showCardDetail = false;
+
+                        var index = that.currentManagedCard.index;
+                        that.currentManagedCard = {};
+                        that.noteCards.splice(index, 1);
+                    }
+                }).catch((e) => {
+                    console.log(e);
+                })
+
+            }).catch(() => {
+
+            });
 
         },
         openNode(note) {
@@ -39,14 +128,14 @@ var note=new Vue({
             // var win = this.$refs['iframe_'+note.id][0].contentWindow;
             // win.noteChanged=this.noteChanged;
         },
-        deleteNote(item){
+        deleteNote(item,index){
 
             var that=this;
 
             this.$confirm('删除“' + item.title + '”?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-            }).then(() => {
+            }).then(({value}) => {
                 axios.post('/note/note/delete','id='+item.id).then(function (data) {
                     if(data){
                         for(var i in that.currentNoteList){
@@ -106,6 +195,44 @@ var note=new Vue({
                 }
             }
         },
+        rightClick(e,item) {
+            // console.log(item)
+            // e.stopPropagation();
+            item.popoverShow=true;
+        },
+        handleSelect() {
+
+        },
+        cardScroll(event) {
+            this.$refs.cardScroll.scrollLeft += event.deltaY / 1.6;
+        },
+        newNoteCard() {
+            var that = this;
+            this.$prompt('输入卡片名称', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+//                    inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+//                    inputErrorMessage: '邮箱格式不正确'
+            }).then(({value}) => {
+
+                axios.post('/note/group/create', {name: value}).then(function (data) {
+                    that.noteCards.push({
+                        id: data,
+                        name: value
+                    });
+                }).catch(function (e) {
+                    that.$message({
+                        type: 'error',
+                        message: '创建失败'
+                    })
+                })
+            }).catch((e) => {
+//                    this.$message({
+//                        type: 'info',
+//                        message: '取消输入'
+//                    });
+            });
+        },
         createNote() {
             var that = this;
             this.$prompt('输入笔记本名称', '标题', {
@@ -138,4 +265,3 @@ var note=new Vue({
     }
 });
 
-openNote=note.openNote;

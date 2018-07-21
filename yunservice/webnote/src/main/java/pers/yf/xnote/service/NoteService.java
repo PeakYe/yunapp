@@ -3,6 +3,7 @@ package pers.yf.xnote.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pers.yf.spring.cloud.ext.auth.UserDetail;
+import pers.yf.xnote.dao.model.FolderMenu;
 import pers.yf.xnote.dao.model.Note;
 import pers.yf.xnote.dao.model.NoteDao;
 import pers.yf.xnote.service.model.RenameModel;
@@ -68,6 +69,11 @@ public class NoteService {
     @RequestMapping(value = "rename", method = RequestMethod.POST)
     public Boolean rename(@RequestBody RenameModel rnote, UserDetail userDetail) {
         return noteDao.updateTitle(rnote.getTitle(), rnote.getId(), userDetail.getId());
+    }
+
+    @RequestMapping(value = "getFolders", method = RequestMethod.POST)
+    public List<FolderMenu> getFolders(UserDetail userDetail) {
+        return noteDao.getFolderMenus(userDetail.getId());
     }
 
 }

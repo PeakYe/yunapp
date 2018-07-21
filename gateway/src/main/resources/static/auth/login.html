@@ -184,7 +184,7 @@
                 if (this.nameChange() && this.pwdChange()) {
                     axios.post('/login', this.form).then(function (data) {
                         if (data.code == 'ok') {
-                            document.cookie = "SESSION=" + data.token + ";path=/";
+                            document.cookie = "app_token=" + data.token + ";path=/";
                             if(that.redirect!=null) {
                                 location.href = that.redirect;
                             }else{
@@ -192,7 +192,7 @@
 //                                    message: '没有重定向地址',
 //                                    type: 'warning'
 //                                });
-                                location.href="/note/index.html"
+                                location.href="/"
                             }
                         }else{
                             that.$message({

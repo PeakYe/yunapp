@@ -17,26 +17,6 @@
     <script src="/js/common/setting.js"></script>
 
     <style>
-        .el-header, .el-footer {
-            background-color: #B3C0D1;
-            color: #333;
-            text-align: center;
-            line-height: 60px;
-        }
-
-        .el-aside {
-            background-color: #D3DCE6;
-            color: #333;
-            text-align: center;
-            line-height: 200px;
-        }
-
-        .el-main {
-            background-color: #E9EEF3;
-            color: #333;
-            text-align: center;
-            line-height: 160px;
-        }
 
         body {
             margin: 0;
@@ -45,68 +25,6 @@
             width: 100%;
             left: 0;
             top: 0;
-        }
-
-        .el-container:nth-child(5) .el-aside,
-        .el-container:nth-child(6) .el-aside {
-            line-height: 260px;
-        }
-
-        .el-container:nth-child(7) .el-aside {
-            line-height: 320px;
-        }
-
-        .time {
-            font-size: 13px;
-            color: #999;
-        }
-
-        .bottom {
-            margin-top: -14px;
-            line-height: 12px;
-        }
-
-        .button {
-            padding: 0;
-            float: right;
-        }
-
-        .image {
-            width: 100%;
-            display: block;
-            height: 100px;
-        }
-
-        .clearfix:before,
-        .clearfix:after {
-            display: table;
-            content: "";
-        }
-
-        .clearfix:after {
-            clear: both
-        }
-
-        .note-row-class {
-            cursor: pointer;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .card-list {
-            white-space: nowrap;
-            display: block;
-            height: 170px;
-            overflow-y: hidden;
-        }
-
-        .card {
-            width: 200px;
-            display: inline-block;
-            padding: 5px;
-            padding-bottom: 15px;
         }
 
         ::-webkit-scrollbar {
@@ -144,11 +62,6 @@
             background-color: #D3DCE6
         }
 
-        .frame-pan {
-            border: none;
-            height: 100%;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
@@ -191,15 +104,16 @@
 
         <div id="floads" v-bind:style="{width:width}" :class="{push:open}">
             <div class="leftside" @click="push()"></div>
-            <div style="height: 100%;display: inline-block;margin-left: -1px; overflow: hidden; border-right: 1px solid #ccc;" v-bind:style="{width:minw+'px'}"  v-for="(item,i) in folders">
+            <div style="height: 100%;display: inline-block;margin-left: -1px; overflow: hidden; border-right: 1px solid #ccc; overflow: auto;"
+                 v-bind:style="{width:minw+'px'}"  v-for="(item,i) in folders" @mouseup="moveEnd()">
                 <div style="border-bottom: 1px solid #ccc; line-height: 12px; padding: 12px; font-weight: bold; cursor: pointer; " @click="back"> << {{item.title}}</div>
 
-                <div v-for="(m,j) in item.subs" >
+                <div v-for="(m,j) in item.subs" @mousedown="moveStart(m)" @mouseup="moveStop()">
                     <template v-if="!m.deleted">
                         <div v-if="!m.type " class="note" @click="select(i,m)" v-on:contextmenu.prevent="noteMenu($event,m)" style="white-space: nowrap;">
                             <i class="el-icon-tickets"></i>&nbsp;{{m.title}}
                         </div>
-                        <div v-else class="note" @click="openNote()" v-on:contextmenu.prevent="noteMenu($event,m)" style="white-space: nowrap;">
+                        <div v-else class="note" @click="select(i,m)" v-on:contextmenu.prevent="noteMenu($event,m)" style="white-space: nowrap;">
                             <i class="el-icon-tickets"></i>&nbsp;{{m.title}}
                         </div>
                     </template>
@@ -211,32 +125,32 @@
             <!-- <input type="" ref="in" name=""> -->
 
             <template v-for="(item,index) in rightMenu" >
-                <p @click="item.method(item)" >
+                <p @click="item.method(object,item)" >
                     {{item.name}}
                 </p>
             </template>
         </div>
 
-        <!--<div style="position: absolute;left: 300px;top:0;bottom: 0; right: 0;">-->
+        <div id="notes" style="position: absolute;left: 300px;top:0;bottom: 0; right: 0;">
             <!--<div class="line-block">&nbsp;</div>-->
-            <!--<el-tabs v-model="nodeTab"  @tab-click="" closable @tab-remove="removeTab">-->
-                <!--<el-tab-pane v-for="(item,index) in tabs" :key="item.id+''" :name="item.id+''" :label="item.title">-->
-                    <!--<div :style="' height: '+textHeight+'px;'">-->
-                        <!--<el-popover-->
-                                <!--placement="top"-->
-                                <!--trigger="hover" >-->
-                            <!--<div style="text-align: right; margin: 0;">-->
-                                <!--<el-button size="mini" type="text" v-on:click.native="openUrl('/note/view.html?id='+item.id)"><i class="el-icon-share"> 分享预览</i></el-button>-->
-                                <!--<el-button size="mini" type="text" @click="deleteNote(item)"><i class="el-icon-delete"> 删除</i></el-button>-->
-                                <!--<el-button size="mini" type="text" @click="renameNote(item)"><i class="el-icon-edit"> 重命名</i></el-button>-->
-                            <!--</div>-->
-                            <!--<el-button slot="reference" type="primary" icon="el-icon-upload" circle style="z-index:1000; position: absolute;bottom:30px; right: 20px;" @click="saveNote(item)"></el-button>-->
-                        <!--</el-popover>-->
-                        <!--<iframe :src="'/note/mkdown_edit.html?id='+item.id" :ref="'iframe_'+item.id" frameborder="0" class="frame-pan"></iframe>-->
-                    <!--</div>-->
-                <!--</el-tab-pane>-->
-            <!--</el-tabs>-->
-        <!--</div>-->
+            <el-tabs v-model="nodeTab"  @tab-click="" closable @tab-remove="removeTab">
+                <el-tab-pane v-for="(item,index) in tabs" :key="item.id+''" :name="item.id+''" :label="item.title">
+                    <div :style="' height: '+textHeight+'px;'">
+                        <el-popover
+                                placement="top"
+                                trigger="hover" >
+                            <div style="text-align: right; margin: 0;">
+                                <el-button size="mini" type="text" v-on:click.native="openUrl('/note/view.html?id='+item.id)"><i class="el-icon-share"> 分享预览</i></el-button>
+                                <el-button size="mini" type="text" @click="deleteNote(item)"><i class="el-icon-delete"> 删除</i></el-button>
+                                <el-button size="mini" type="text" @click="renameNote(item)"><i class="el-icon-edit"> 重命名</i></el-button>
+                            </div>
+                            <el-button slot="reference" type="primary" icon="el-icon-upload" circle style="z-index:1000; position: absolute;bottom:30px; right: 20px;" @click="saveNote(item)"></el-button>
+                        </el-popover>
+                        <iframe :src="'/note/mkdown_edit.html?id='+item.id" :ref="'iframe_'+item.id" frameborder="0" class="frame-pan"></iframe>
+                    </div>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
     </div>
 
 
@@ -246,6 +160,10 @@
 </body>
 
 <script type="text/javascript">
+
+    var openNote;
+    var createNote;
+    var deleteNote;
 
     var app = new Vue({
         el: '#nav',

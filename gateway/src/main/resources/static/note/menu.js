@@ -9,17 +9,31 @@ var menu = new Vue({
         focus: false,
         object: null,
         rightMenu: [
-            {
-                id: 'del', name: '删除', method: function () {
-                    floads.deleteFolder(menu.object);
-                }
-            }
+            // {
+            //     id: 'newNote',name:'创建文件夹',method:function (arg,selecedMenu) {
+            //         var note=createNote(menu.object.id);
+            //         if(note!=null){
+            //
+            //         }
+            //     }
+            // },
+            // {
+            //     id: 'del', name: '删除', method: function () {
+            //         floads.deleteFolder(menu.object);
+            //     }
+            // }
         ]
     },
     methods: {
-        showNoteMenu(e, item) {
+        /**
+         *
+         * @param e
+         * @param item 触发元素对象
+         * @param list 显示菜单
+         */
+        showNoteMenu(e, item, list) {
+            this.rightMenu = list;
             this.object = item;
-            console.log(e)
             this.pos.left = e.clientX + 'px';
             this.pos.top = e.clientY + 'px';
             this.showMenu = true;
@@ -38,123 +52,74 @@ var floads = new Vue({
         data: {},
         folders: [],
         open: false,
-        maxMenuNum:3,
+        maxMenuNum: 3,
         minw: 300,
         width: '300px'
     },
     mounted: function () {
         var that = this;
-        // axios.get('/note/note/list').then(function (d) {
-        //     var rootMenu={
-        //         id:'root',
-        //         title:'root',
-        //         subs:[]
-        //     };
-        //
-        //     var data={};
-        //     for(var index=0;i<d.length;i++){
-        //         data[d[index].id]=d[index];
-        //     }
-        //
-        //
-        //     for(var key in data){
-        //         var obj=data[key];
-        //         if(obj.parentId){
-        //             var parent=data[obj.parentId];
-        //             console.log(parent)
-        //             if(parent!=null){
-        //                 if(!parent.subs){
-        //                     parent.subs=[];
-        //                 }
-        //                 parent.subs.push(obj);
-        //             }
-        //         }else{
-        //             obj.parentId=rootMenu.id;
-        //             rootMenu.subs.push(obj);
-        //         }
-        //     }
-        //     data[rootMenu.id]=rootMenu;
-        //     that.folders.push(rootMenu);
-        //
-        // });
+        axios.post('/note/note/getFolders').then(function (d) {
+            var rootMenu = {
+                id: 'root',
+                title: 'root',
+                type: 'folder',
+                subs: []
+            };
 
-
-        var data = {
-            file1: {
-                id: 'flie1',
-                parentId: '',
-                title: 'root1'
-            },
-            file2: {
-                id: 'file2',
-                parentId: '',
-                title: 'root2'
-            },
-            file11: {
-                id: 'file11',
-                parentId: 'file1',
-                title: 'wqwqwe'
-            },
-            file12: {
-                id: 'file12',
-                parentId: 'file1',
-                title: 'wqwqwe'
-            },
-            file111: {
-                id: 'file111',
-                parentId: 'file11',
-                title: 'wqwqwe'
-            },
-            file1111: {
-                id: 'file1111',
-                parentId: 'file111',
-                title: 'wqwqwe'
+            var data = {};
+                    for (var index = 0; index < d.length; index++) {
+                var obj = d[index];
+                data[obj.fileId] = {
+                    id: obj.fileId,
+                    title: obj.fileName,
+                    type: obj.fileType,
+                    trueId: obj.trueId,
+                    parentId: obj.parentId,
+                    subs: []
+                };
             }
-        }
-
-        var rootMenu = {
-            id: 'root',
-            title: 'root',
-            subs: []
-        };
 
 
-        for (key in data) {
-            var obj = data[key];
-            if (obj.parentId) {
-                var parent = data[obj.parentId];
-                console.log(parent)
-                if (parent != null) {
-                    if (!parent.subs) {
-                        parent.subs = [];
+            for (var key in data) {
+                var obj = data[key];
+
+                if (obj.parentId) {
+                    var parent = data[obj.parentId];
+                    if (parent != null) {
+                        parent.subs.push(obj);
                     }
-                    parent.subs.push(obj);
+                } else {
+                    obj.parentId = rootMenu.id;
+                    rootMenu.subs.push(obj);
                 }
-            } else {
-                obj.parentId = rootMenu.id;
-                rootMenu.subs.push(obj);
+
+
             }
-        }
+            data[rootMenu.id] = rootMenu;
+            that.folders.push(rootMenu);
 
-
-        data[rootMenu.id] = rootMenu;
-
-        this.data = data;
-        this.folders.push(rootMenu);
-
+        });
     },
     methods: {
         select: function (index, folder) {
-            if(!this.open){
-                this.folders=[folder]
-            }else if ( index > this.maxMenuNum - 2) {
-                this.folders.shift();
-                this.folders.push(folder)
+
+            if (folder.type == 'folder') {
+                if (!this.open) {
+                    this.folders = [folder]
+                } else if (index > this.maxMenuNum - 2) {
+                    this.folders.shift();
+                    this.folders.push(folder)
+                } else {
+                    this.folders.splice(index + 1, this.folders.length - index - 1);
+                    this.folders.push(folder)
+                }
+                this.width = this.minw * this.folders.length + 'px';
             } else {
-                this.folders.splice(index + 1, this.folders.length - index - 1);
-                this.folders.push(folder)
+                if (this.open) {
+                    this.push();
+                }
+                openNote(folder);
             }
-            this.width = this.minw * this.folders.length + 'px';
         },
         back: function () {
             var currentFload = this.folders[0];
@@ -169,16 +134,95 @@ var floads = new Vue({
             }
         },
         noteMenu: function (e, folder) {
-            menu.showNoteMenu(e, folder);
+            var that=this;
+            menu.showNoteMenu(e, folder, [
+                {
+                    id: 'newNote',
+                    name: '创建笔记',
+                    method: function (arg, selecedMenu) {
+                        // arg===folder
+                        that.createNote(folder.trueId);
+                    }
+                },
+                {
+                    id: 'newFolder',
+                    name: '创建文件夹',
+                    method: function (arg, selecedMenu) {
+                        // arg===folder
+                        that.createFolder(folder);
+                    }
+                },
+                {
+                    id: 'del', name: '删除',
+                    method: function () {
+                        that.delete(folder);
+                    }
+                }
+            ]);
         },
-        deleteFolder: function (folder) {
+        delete: function (folder) {
             this.data[folder.id] = null;
             // console.log('del '+folder.title)
             // folder=null;
-            folder.title = "deleted";
-            folder.deleted = true;
+            var that=this;
+            if(folder.subs.length>0) {
+                that.$message({
+                    type: 'error',
+                    message: '文件夹存在文件，不能删除'
+                });
+                return;
+            }
+
+            this.$confirm('删除“' + folder.title + '”?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            }).then(() => {
+                axios.post('/note/note/delete','id='+folder.id).then(function (data) {
+                    if(data){
+                        folder.title = "deleted";
+                        folder.deleted = true;
+                    }
+                }).catch(function () {
+                    that.$message({
+                        type: 'error',
+                        message: '删除失败'
+                    })
+                })
+            })
         },
-        setWidth:function(){
+        createFolder: function (parentFolder) {
+            var that=this;
+            this.$prompt(null, '输入文件夹名称', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+//                    inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+//                    inputErrorMessage: '邮箱格式不正确'
+            }).then(({value}) => {
+
+                axios.post('/note/group/create', {name: value}).then(function (data) {
+                    that.noteCards.push({
+                        id: data,
+                        name: value
+                    });
+                    var f={
+                        id: 'folder'+data,
+                        title: value,
+                        type: 'folder',
+                        trueId: data,
+                        parentId: parentFolder.id,
+                        subs: []
+                    };
+                    that.data[f.id]=f;
+                    that.data[f.parentId].subs.push(f);
+                }).catch(function (e) {
+                    that.$message({
+                        type: 'error',
+                        message: '创建失败'
+                    })
+                })
+            })
+        },
+        setWidth: function () {
             this.width = this.minw * this.folders.length + 'px';
         },
         push: function () {
@@ -194,13 +238,46 @@ var floads = new Vue({
                     if (parent != null && !parent.deleted) {
                         this.folders.unshift(parent);
                         this.setWidth();
-                    }else{
+                    } else {
                         break;
                     }
                 }
             }
-            this.open=!this.open;
-        }
+            this.open = !this.open;
+        },
+        createNote(folderId) {
+            var that = this;
+            this.$prompt('输入笔记本名称', '标题', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+//                    inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+//                    inputErrorMessage: '邮箱格式不正确'
+            }).then(({value}) => {
+                axios.post('/note/note/save', {title: value,groupId:folderId}).then(function (data) {
+                    var note=data;
+                    if (note != null) {
+                        var f={
+                            id: note.fileType+note.fileId,
+                            title: note.fileName,
+                            type: note.fileType,
+                            trueId: note.fileId,
+                            parentId: note.parentId,
+                            subs: []
+                        };
+                        that.data[f.id]=f;
+                        that.data[f.parentId].subs.push(f);
+
+                    }
+                }).catch(function (e) {
+                    that.$message({
+                        type: 'error',
+                        message: '创建失败'
+                    })
+                })
+            }).catch(function () {
+
+            })
+        },
     }
 });
 

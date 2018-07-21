@@ -19,7 +19,7 @@ auth:
   forwardHeader: user
   requestHeader:
   sessionIn: cookie
-  sessionId: SESSION
+  sessionId: app_token
   loginUrl: /auth/login.html
 #  tokenUrl: /auth/token
 #  authService: http://localhost:8080
